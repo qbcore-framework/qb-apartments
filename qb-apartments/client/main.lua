@@ -46,7 +46,7 @@ Citizen.CreateThread(function()
         Citizen.Wait(1)
         if isLoggedIn and ClosestHouse ~= nil then
             if InApartment then
-                local pos = GetEntityCoords(GetPlayerPed(-1))
+                local pos = GetEntityCoords(PlayerPedId())
 
                 if CurrentDoorBell ~= 0 then
                     if(GetDistanceBetweenCoords(pos.x, pos.y, pos.z, Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.exit.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.exit.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.exit.z, true) < 1.2)then
@@ -95,7 +95,7 @@ Citizen.CreateThread(function()
                     QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.logout.x, Apartments.Locations[ClosestHouse].coords.enter.y + POIOffsets.logout.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.logout.z, 'Log out')
                 end
             else
-                local pos = GetEntityCoords(GetPlayerPed(-1))
+                local pos = GetEntityCoords(PlayerPedId())
                 if(GetDistanceBetweenCoords(pos.x, pos.y, pos.z, Apartments.Locations[ClosestHouse].coords.doorbell.x, Apartments.Locations[ClosestHouse].coords.doorbell.y,Apartments.Locations[ClosestHouse].coords.doorbell.z, true) < 1.2)then
                     QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.doorbell.x, Apartments.Locations[ClosestHouse].coords.doorbell.y, Apartments.Locations[ClosestHouse].coords.doorbell.z, '~g~G~w~ - Ring the doorbell')
                     if IsControlJustPressed(0, Keys["G"]) then
@@ -106,7 +106,7 @@ Citizen.CreateThread(function()
                 end
 
                 if IsOwned then
-                    local pos = GetEntityCoords(GetPlayerPed(-1))
+                    local pos = GetEntityCoords(PlayerPedId())
                     if(GetDistanceBetweenCoords(pos.x, pos.y, pos.z, Apartments.Locations[ClosestHouse].coords.enter.x, Apartments.Locations[ClosestHouse].coords.enter.y,Apartments.Locations[ClosestHouse].coords.enter.z, true) < 1.2)then
                         QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x, Apartments.Locations[ClosestHouse].coords.enter.y, Apartments.Locations[ClosestHouse].coords.enter.z, '~g~E~w~ - Enter appartment')
                         if IsControlJustPressed(0, Keys["E"]) then
@@ -118,7 +118,7 @@ Citizen.CreateThread(function()
                         end
                     end
                 elseif not IsOwned then
-                    --[[local pos = GetEntityCoords(GetPlayerPed(-1))
+                    --[[local pos = GetEntityCoords(PlayerPedId())
                     if(GetDistanceBetweenCoords(pos.x, pos.y, pos.z, Apartments.Locations[ClosestHouse].coords.enter.x, Apartments.Locations[ClosestHouse].coords.enter.y,Apartments.Locations[ClosestHouse].coords.enter.z, true) < 1.2)then
                         QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x, Apartments.Locations[ClosestHouse].coords.enter.y, Apartments.Locations[ClosestHouse].coords.enter.z, '~g~G~w~ - Verander van appartement')
                         if IsControlJustPressed(0, Keys["G"]) then
@@ -142,8 +142,8 @@ AddEventHandler('onResourceStop', function(resource)
                 while not IsScreenFadedOut() do
                     Citizen.Wait(10)
                 end
-                SetEntityCoords(GetPlayerPed(-1), Apartments.Locations[ClosestHouse].coords.enter.x, Apartments.Locations[ClosestHouse].coords.enter.y,Apartments.Locations[ClosestHouse].coords.enter.z)
-                SetEntityHeading(GetPlayerPed(-1), Apartments.Locations[ClosestHouse].coords.enter.h)
+                SetEntityCoords(PlayerPedId(), Apartments.Locations[ClosestHouse].coords.enter.x, Apartments.Locations[ClosestHouse].coords.enter.y,Apartments.Locations[ClosestHouse].coords.enter.z)
+                SetEntityHeading(PlayerPedId(), Apartments.Locations[ClosestHouse].coords.enter.h)
                 Citizen.Wait(1000)
                 InApartment = false
                 DoScreenFadeIn(1000)
@@ -321,8 +321,8 @@ function LeaveApartment(house)
     end
     exports['qb-interior']:DespawnInterior(houseObj, function()
         TriggerEvent('qb-weathersync:client:EnableSync')
-        SetEntityCoords(GetPlayerPed(-1), Apartments.Locations[house].coords.enter.x, Apartments.Locations[house].coords.enter.y,Apartments.Locations[house].coords.enter.z)
-        SetEntityHeading(GetPlayerPed(-1), Apartments.Locations[house].coords.enter.h)
+        SetEntityCoords(PlayerPedId(), Apartments.Locations[house].coords.enter.x, Apartments.Locations[house].coords.enter.y,Apartments.Locations[house].coords.enter.z)
+        SetEntityHeading(PlayerPedId(), Apartments.Locations[house].coords.enter.h)
         Citizen.Wait(1000)
         TriggerServerEvent("apartments:server:RemoveObject", CurrentApartment, house)
         TriggerServerEvent('qb-apartments:server:SetInsideMeta', CurrentApartment, false)
@@ -336,7 +336,7 @@ function LeaveApartment(house)
 end
 
 function SetClosestApartment()
-    local pos = GetEntityCoords(GetPlayerPed(-1), true)
+    local pos = GetEntityCoords(PlayerPedId(), true)
     local current = nil
     local dist = nil
 
@@ -361,13 +361,13 @@ end
 
 function openHouseAnim()
     loadAnimDict("anim@heists@keycard@") 
-    TaskPlayAnim( GetPlayerPed(-1), "anim@heists@keycard@", "exit", 5.0, 1.0, -1, 16, 0, 0, 0, 0 )
+    TaskPlayAnim( PlayerPedId(), "anim@heists@keycard@", "exit", 5.0, 1.0, -1, 16, 0, 0, 0, 0 )
     Citizen.Wait(400)
-    ClearPedTasks(GetPlayerPed(-1))
+    ClearPedTasks(PlayerPedId())
 end
 
 function MenuOwners()
-    ped = GetPlayerPed(-1);
+    ped = PlayerPedId();
     MenuTitle = "Owners"
     ClearMenu()
     Menu.addButton("Ring the doorbell", "OwnerList", nil)
@@ -376,7 +376,7 @@ end
 
 function OwnerList()
     QBCore.Functions.TriggerCallback('apartments:GetAvailableApartments', function(apartments)
-        ped = GetPlayerPed(-1);
+        ped = PlayerPedId();
         MenuTitle = "Rang the door at: "
         ClearMenu()
 
@@ -399,7 +399,7 @@ function RingDoor(apartmentId)
 end
 
 function MenuOutfits()
-    ped = GetPlayerPed(-1);
+    ped = PlayerPedId();
     MenuTitle = "Outfits"
     ClearMenu()
     Menu.addButton("My Outfits", "OutfitsLijst", nil)
@@ -409,14 +409,14 @@ end
 function changeOutfit()
 	Wait(200)
     loadAnimDict("clothingshirt")    	
-	TaskPlayAnim(GetPlayerPed(-1), "clothingshirt", "try_shirt_positive_d", 8.0, 1.0, -1, 49, 0, 0, 0, 0)
+	TaskPlayAnim(PlayerPedId(), "clothingshirt", "try_shirt_positive_d", 8.0, 1.0, -1, 49, 0, 0, 0, 0)
 	Wait(3100)
-	TaskPlayAnim(GetPlayerPed(-1), "clothingshirt", "exit", 8.0, 1.0, -1, 49, 0, 0, 0, 0)
+	TaskPlayAnim(PlayerPedId(), "clothingshirt", "exit", 8.0, 1.0, -1, 49, 0, 0, 0, 0)
 end
 
 function OutfitsLijst()
     QBCore.Functions.TriggerCallback('apartments:GetOutfits', function(outfits)
-        ped = GetPlayerPed(-1);
+        ped = PlayerPedId();
         MenuTitle = "My Outfits :"
         ClearMenu()
 
@@ -433,7 +433,7 @@ function OutfitsLijst()
 end
 
 function optionMenu(outfitData)
-    ped = GetPlayerPed(-1);
+    ped = PlayerPedId();
     MenuTitle = "What now?"
     ClearMenu()
 
