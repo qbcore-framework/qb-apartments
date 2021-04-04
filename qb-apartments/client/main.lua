@@ -344,7 +344,7 @@ function SetClosestApartment()
 
     for id, house in pairs(Apartments.Locations) do
         if current ~= nil then
-            if distcheck < dist)then
+            if distcheck < dist then
                 current = id
                 dist = distcheck
             end
