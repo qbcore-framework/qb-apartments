@@ -182,9 +182,9 @@ end)
 
 RegisterNetEvent('apartments:client:SpawnInApartment')
 AddEventHandler('apartments:client:SpawnInApartment', function(apartmentId, apartment)
-    --TriggerEvent('instances:client:JoinInstance', apartmentId, apartment)
     if rangDoorbell ~= nil then
-        if(GetDistanceBetweenCoords(pos.x, pos.y, pos.z, Apartments.Locations[rangDoorbell].coords.enter.x, Apartments.Locations[rangDoorbell].coords.enter.y,Apartments.Locations[rangDoorbell].coords.enter.z, true) > 5)then
+        local dist = #(pos - vector3(Apartments.Locations[rangDoorbell].coords.enter.x, Apartments.Locations[rangDoorbell].coords.enter.y,Apartments.Locations[rangDoorbell].coords.enter.z))
+        if dist > 5 then
             return
         end
     end
@@ -338,17 +338,18 @@ end
 
 function SetClosestApartment()
     local pos = GetEntityCoords(PlayerPedId(), true)
+    local distcheck = #(pos - vector3(Apartments.Locations[id].coords.enter.x, Apartments.Locations[id].coords.enter.y, Apartments.Locations[id].coords.enter.z))
     local current = nil
     local dist = nil
 
     for id, house in pairs(Apartments.Locations) do
         if current ~= nil then
-            if(GetDistanceBetweenCoords(pos, Apartments.Locations[id].coords.enter.x, Apartments.Locations[id].coords.enter.y, Apartments.Locations[id].coords.enter.z, true) < dist)then
+            if distcheck < dist)then
                 current = id
-                dist = GetDistanceBetweenCoords(pos, Apartments.Locations[id].coords.enter.x, Apartments.Locations[id].coords.enter.y, Apartments.Locations[id].coords.enter.z, true)
+                dist = distcheck
             end
         else
-            dist = GetDistanceBetweenCoords(pos, Apartments.Locations[id].coords.enter.x, Apartments.Locations[id].coords.enter.y, Apartments.Locations[id].coords.enter.z, true)
+            dist = distcheck
             current = id
         end
     end
