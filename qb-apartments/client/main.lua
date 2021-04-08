@@ -337,7 +337,7 @@ function LeaveApartment(house)
 end
 
 function SetClosestApartment()
-    local pos = GetEntityCoords(PlayerPedId(), true)
+    local pos = GetEntityCoords(PlayerPedId())
     local current = nil
     local dist = nil
 
