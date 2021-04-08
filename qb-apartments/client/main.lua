@@ -338,11 +338,11 @@ end
 
 function SetClosestApartment()
     local pos = GetEntityCoords(PlayerPedId(), true)
-    local distcheck = #(pos - vector3(Apartments.Locations[id].coords.enter.x, Apartments.Locations[id].coords.enter.y, Apartments.Locations[id].coords.enter.z))
     local current = nil
     local dist = nil
 
     for id, house in pairs(Apartments.Locations) do
+        local distcheck = #(pos - vector3(Apartments.Locations[id].coords.enter.x, Apartments.Locations[id].coords.enter.y, Apartments.Locations[id].coords.enter.z))
         if current ~= nil then
             if distcheck < dist then
                 current = id
