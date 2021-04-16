@@ -256,7 +256,7 @@ function EnterApartment(house, apartmentId, new)
                 rangDoorbell = nil
                 
                 Citizen.Wait(500)
-                SetRainFxIntensity(0.0)
+                SetRainLevel(0.0)
                 TriggerEvent('qb-weathersync:client:DisableSync')
                 -- TriggerEvent('tb-weed:client:getHousePlants', house)
                 Citizen.Wait(100)
@@ -289,7 +289,7 @@ function EnterApartment(house, apartmentId, new)
             CurrentApartment = apartmentId
             
             Citizen.Wait(500)
-            SetRainFxIntensity(0.0)
+            SetRainLevel(0.0)
             TriggerEvent('qb-weathersync:client:DisableSync')
             Citizen.Wait(100)
             SetWeatherTypePersist('EXTRASUNNY')
