@@ -10,8 +10,16 @@ AddEventHandler('apartments:server:CreateApartment', function(type, label)
     local num = CreateApartmentId(type)
     local apartmentId = tostring(type .. num)
     local label = tostring(label .. " " .. num)
-    QBCore.Functions.ExecuteSql(false, "INSERT INTO `apartments` (`name`, `type`, `label`, `citizenid`) VALUES ('"..apartmentId.."', '"..type.."', '"..label.."', '"..Player.PlayerData.citizenid.."')")
-    TriggerClientEvent('QBCore:Notify', src, "You got a apartment ("..label..")")
+    QBCore.Functions.ExecuteSql(
+        false,
+        {
+            ['a']= apartmentId,
+            ['b']= type,
+            ['c']= label,
+            ['d']= Player.PlayerData.citizenid
+        },
+        "INSERT INTO `apartments` (`name`, `type`, `label`, `citizenid`) VALUES (@a, @b, @c, @d)")
+    TriggerClientEvent('QBCore:Notify', src, "El municipio te dio un apartamento ("..label..")")
     TriggerClientEvent("apartments:client:SpawnInApartment", src, apartmentId, type)
     TriggerClientEvent("apartments:client:SetHomeBlip", src, type)
 end)
@@ -20,7 +28,13 @@ RegisterServerEvent('apartments:server:UpdateApartment')
 AddEventHandler('apartments:server:UpdateApartment', function(type)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    QBCore.Functions.ExecuteSql(false, "UPDATE `apartments` SET type='"..type.."' WHERE `citizenid` = '"..Player.PlayerData.citizenid.."'")
+    QBCore.Functions.ExecuteSql(
+        false,
+        {
+            ['a'] = type,
+            ['b'] = Player.PlayerData.citizenid
+        },
+        "UPDATE `apartments` SET type= @a WHERE `citizenid` = @b")
 
     TriggerClientEvent('QBCore:Notify', src, "You have changed apartments")
     TriggerClientEvent("apartments:client:SetHomeBlip", src, type)
@@ -85,7 +99,7 @@ function CreateApartmentId(type)
 
 	while not UniqueFound do
 		AparmentId = tostring(math.random(1, 9999))
-		QBCore.Functions.ExecuteSql(true, "SELECT COUNT(*) as count FROM `apartments` WHERE `name` = '"..tostring(type .. AparmentId).."'", function(result)
+		QBCore.Functions.ExecuteSql(true, { ['a'] = tostring(type .. AparmentId)}, "SELECT COUNT(*) as count FROM `apartments` WHERE `name` = @a", function(result)
 			if result[1].count == 0 then
 				UniqueFound = true
 			end
@@ -96,7 +110,7 @@ end
 
 function GetApartmentInfo(apartmentId)
     local retval = nil
-    QBCore.Functions.ExecuteSql(true, "SELECT * FROM `apartments` WHERE `name` = '"..apartmentId.."' ", function(result)
+    QBCore.Functions.ExecuteSql(true, {['a'] = apartmentId}, "SELECT * FROM `apartments` WHERE `name` = @a", function(result)
         if result[1] ~= nil then 
             retval = result[1]
         end
@@ -105,7 +119,7 @@ function GetApartmentInfo(apartmentId)
 end
 
 function GetOwnedApartment(citizenid)
-    QBCore.Functions.ExecuteSql(true, "SELECT * FROM `apartments` WHERE `citizenid` = '"..citizenid.."' ", function(result)
+    QBCore.Functions.ExecuteSql(true, {['a'] = citizenid}, "SELECT * FROM `apartments` WHERE `citizenid` = @a", function(result)
         if result[1] ~= nil then 
             return result[1]
         end
@@ -153,7 +167,7 @@ end)
 
 QBCore.Functions.CreateCallback('apartments:GetOwnedApartment', function(source, cb, cid)
     if cid ~= nil then
-        QBCore.Functions.ExecuteSql(false, "SELECT * FROM `apartments` WHERE `citizenid` = '"..cid.."' ", function(result)
+        QBCore.Functions.ExecuteSql(false, {['a'] = cid}, "SELECT * FROM `apartments` WHERE `citizenid` = @a", function(result)
             if result[1] ~= nil then 
                 return cb(result[1])
             end
@@ -162,7 +176,7 @@ QBCore.Functions.CreateCallback('apartments:GetOwnedApartment', function(source,
     else
         local src = source
         local Player = QBCore.Functions.GetPlayer(src)
-        QBCore.Functions.ExecuteSql(false, "SELECT * FROM `apartments` WHERE `citizenid` = '"..Player.PlayerData.citizenid.."' ", function(result)
+        QBCore.Functions.ExecuteSql(false, {['a'] = Player.PlayerData.citizenid}, "SELECT * FROM `apartments` WHERE `citizenid` = @a", function(result)
             if result[1] ~= nil then 
                 return cb(result[1])
             end
@@ -175,7 +189,7 @@ QBCore.Functions.CreateCallback('apartments:IsOwner', function(source, cb, apart
 	local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     if Player ~= nil then
-        QBCore.Functions.ExecuteSql(false, "SELECT * FROM `apartments` WHERE `citizenid` = '"..Player.PlayerData.citizenid.."' ", function(result)
+        QBCore.Functions.ExecuteSql(false, {['a'] = Player.PlayerData.citizenid}, "SELECT * FROM `apartments` WHERE `citizenid` = @a", function(result)
             if result[1] ~= nil then 
                 if result[1].type == apartment then
                     cb(true)
@@ -195,7 +209,7 @@ QBCore.Functions.CreateCallback('apartments:GetOutfits', function(source, cb)
 	local Player = QBCore.Functions.GetPlayer(src)
 
 	if Player then
-		QBCore.Functions.ExecuteSql(false, "SELECT * FROM `player_outfits` WHERE `citizenid` = '"..Player.PlayerData.citizenid.."'", function(result)
+		QBCore.Functions.ExecuteSql(false, {['a'] = Player.PlayerData.citizenid}, "SELECT * FROM `player_outfits` WHERE `citizenid` = @a", function(result)
 			if result[1] ~= nil then
 				cb(result)
 			else
