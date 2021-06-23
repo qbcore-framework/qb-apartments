@@ -7,40 +7,40 @@ Apartments.Locations = {
         name = "apartment1",
         label = "South Rockford Drive",
         coords = {
-            enter = {x = -667.372, y = -1106.034, z = 14.629, h = 65.033},
-            doorbell = {x = -667.601, y = -1107.354, z = 15.133, h = 65.033},
+            enter = vector4(-667.372, -1106.034, 14.629, 65.033),
+            doorbell = vector4(-667.601, -1107.354, 15.133, 65.033),
         }
     },
     ["apartment2"] = {
         name = "apartment2",
         label = "Morningwood Blvd",
         coords = {
-            enter = {x = -1288.046, y = -430.126, z = 35.077, h = 305.348},
-            doorbell = {x = -667.682, y = -1105.876, z = 14.629, h = 65.033},
+            enter = vector4(-1288.046, -430.126, 35.077, 305.348),
+            doorbell = vector4(-667.682, -1105.876, 14.629, 65.033),
         }
     },
     ["apartment3"] = {
         name = "apartment3",
         label = "Integrity Way",
         coords = {
-            enter = {x = 269.075, y = -640.672, z = 42.02, h = 70.01},
-            doorbell = {x = -667.682, y = -1105.876, z = 14.629, h = 65.033},
+            enter = vector4(269.075, -640.672, 42.02, 70.01),
+            doorbell = vector4(-667.682, -1105.876, 14.629, 65.033),
         }
     },
     ["apartment4"] = {
         name = "apartment4",
         label = "Tinsel Towers",
         coords = {
-            enter = {x = -621.016, y = 46.677, z = 43.591, h = 179.36},
-            doorbell = {x = -667.682, y = -1105.876, z = 14.629, h = 65.033},
+            enter = vector4(-621.016, 46.677, 43.591, 179.36),
+            doorbell = vector4(-667.682, -1105.876, 14.629, 65.033),
         }
     },
     ["apartment5"] = {
         name = "apartment5",
         label = "Fantastic Plaza",
         coords = {
-            enter = {x = 291.517, y = -1078.674, z = 29.405, h = 270.75},
-            doorbell = {x = -667.682, y = -1105.876, z = 14.629, h = 65.033},
+            enter = vector4(291.517, -1078.674, 29.405, 270.75),
+            doorbell = vector4(-667.682, -1105.876, 14.629, 65.033),
         }
     },
 }
