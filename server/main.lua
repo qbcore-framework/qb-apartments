@@ -10,7 +10,12 @@ AddEventHandler('apartments:server:CreateApartment', function(type, label)
     local num = CreateApartmentId(type)
     local apartmentId = tostring(type .. num)
     local label = tostring(label .. " " .. num)
-    QBCore.Functions.ExecuteSql(false, "INSERT INTO `apartments` (`name`, `type`, `label`, `citizenid`) VALUES ('"..apartmentId.."', '"..type.."', '"..label.."', '"..Player.PlayerData.citizenid.."')")
+    exports.ghmattimysql:execute('INSERT INTO apartments (name, type, label, citizenid) VALUES (@name, @type, @label, @citizenid)', {
+        ['@name'] = apartmentId,
+        ['@type'] = type,
+        ['@label'] = label,
+        ['@citizenid'] = Player.PlayerData.citizenid
+    })
     TriggerClientEvent('QBCore:Notify', src, "You got a apartment ("..label..")")
     TriggerClientEvent("apartments:client:SpawnInApartment", src, apartmentId, type)
     TriggerClientEvent("apartments:client:SetHomeBlip", src, type)
@@ -20,8 +25,7 @@ RegisterServerEvent('apartments:server:UpdateApartment')
 AddEventHandler('apartments:server:UpdateApartment', function(type)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    QBCore.Functions.ExecuteSql(false, "UPDATE `apartments` SET type='"..type.."' WHERE `citizenid` = '"..Player.PlayerData.citizenid.."'")
-
+    exports.ghmattimysql:execute('UPDATE apartments SET type=@type WHERE citizenid=@citizenid', {['@type'] = type, ['@citizenid'] = Player.PlayerData.citizenid})
     TriggerClientEvent('QBCore:Notify', src, "You have changed apartments")
     TriggerClientEvent("apartments:client:SetHomeBlip", src, type)
 end)
@@ -153,7 +157,7 @@ end)
 
 QBCore.Functions.CreateCallback('apartments:GetOwnedApartment', function(source, cb, cid)
     if cid ~= nil then
-        QBCore.Functions.ExecuteSql(false, "SELECT * FROM `apartments` WHERE `citizenid` = '"..cid.."' ", function(result)
+        exports.ghmattimysql:execute('SELECT * FROM apartments WHERE citizenid=@citizenid', {['@citizenid'] = cid}, function(result)
             if result[1] ~= nil then 
                 return cb(result[1])
             end
@@ -162,7 +166,7 @@ QBCore.Functions.CreateCallback('apartments:GetOwnedApartment', function(source,
     else
         local src = source
         local Player = QBCore.Functions.GetPlayer(src)
-        QBCore.Functions.ExecuteSql(false, "SELECT * FROM `apartments` WHERE `citizenid` = '"..Player.PlayerData.citizenid.."' ", function(result)
+        exports.ghmattimysql:execute('SELECT * FROM apartments WHERE citizenid=@citizenid', {['@citizenid'] = Player.PlayerData.citizenid}, function(result)
             if result[1] ~= nil then 
                 return cb(result[1])
             end
@@ -175,7 +179,7 @@ QBCore.Functions.CreateCallback('apartments:IsOwner', function(source, cb, apart
 	local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     if Player ~= nil then
-        QBCore.Functions.ExecuteSql(false, "SELECT * FROM `apartments` WHERE `citizenid` = '"..Player.PlayerData.citizenid.."' ", function(result)
+        exports.ghmattimysql:execute('SELECT * FROM apartments WHERE citizenid=@citizenid', {['@citizenid'] = Player.PlayerData.citizenid}, function(result)
             if result[1] ~= nil then 
                 if result[1].type == apartment then
                     cb(true)
@@ -195,7 +199,7 @@ QBCore.Functions.CreateCallback('apartments:GetOutfits', function(source, cb)
 	local Player = QBCore.Functions.GetPlayer(src)
 
 	if Player then
-		QBCore.Functions.ExecuteSql(false, "SELECT * FROM `player_outfits` WHERE `citizenid` = '"..Player.PlayerData.citizenid.."'", function(result)
+		exports.ghmattimysql:execute('SELECT * FROM player_outfits WHERE citizenid=@citizenid', {['@citizenid'] = Player.PlayerData.citizenid}, function(result)
 			if result[1] ~= nil then
 				cb(result)
 			else
