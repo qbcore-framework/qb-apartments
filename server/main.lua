@@ -89,7 +89,7 @@ function CreateApartmentId(type)
 
 	while not UniqueFound do
 		AparmentId = tostring(math.random(1, 9999))
-		QBCore.Functions.ExecuteSql(true, "SELECT COUNT(*) as count FROM `apartments` WHERE `name` = '"..tostring(type .. AparmentId).."'", function(result)
+        exports.ghmattimysql:execute('SELECT COUNT(*) as count FROM apartments WHERE name=@name', {['@name'] = tostring(type .. AparmentId)}, function(result)
 			if result[1].count == 0 then
 				UniqueFound = true
 			end
@@ -100,7 +100,7 @@ end
 
 function GetApartmentInfo(apartmentId)
     local retval = nil
-    QBCore.Functions.ExecuteSql(true, "SELECT * FROM `apartments` WHERE `name` = '"..apartmentId.."' ", function(result)
+    exports.ghmattimysql:execute('SELECT * FROM apartments WHERE name=@name', {['@name'] = apartmentId}, function(result)
         if result[1] ~= nil then 
             retval = result[1]
         end
@@ -109,7 +109,7 @@ function GetApartmentInfo(apartmentId)
 end
 
 function GetOwnedApartment(citizenid)
-    QBCore.Functions.ExecuteSql(true, "SELECT * FROM `apartments` WHERE `citizenid` = '"..citizenid.."' ", function(result)
+    exports.ghmattimysql:execute('SELECT * FROM apartments WHERE citizenid=@citizenid', {['@citizenid'] = citizenid}, function(result)
         if result[1] ~= nil then 
             return result[1]
         end
