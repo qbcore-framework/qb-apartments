@@ -183,7 +183,7 @@ end)
 RegisterNetEvent('apartments:client:SpawnInApartment')
 AddEventHandler('apartments:client:SpawnInApartment', function(apartmentId, apartment)
     if rangDoorbell ~= nil then
-        local dist = #(pos - vector3(Apartments.Locations[rangDoorbell].coords.enter.x, Apartments.Locations[rangDoorbell].coords.enter.y,Apartments.Locations[rangDoorbell].coords.enter.z))
+        local dist = #(pos - Apartments.Locations[rangDoorbell].coords.enter)
         if dist > 5 then
             return
         end
