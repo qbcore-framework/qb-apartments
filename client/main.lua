@@ -228,7 +228,7 @@ RegisterNetEvent('apartments:client:RingDoor')
 AddEventHandler('apartments:client:RingDoor', function(player, house)
     CurrentDoorBell = player
     TriggerServerEvent("InteractSound_SV:PlayOnSource", "doorbell", 0.1)
-    QBCore.Functions.Notify("Iemand belt aan de deur!")
+    QBCore.Functions.Notify("Someone Is At The Door!")
 end)
 
 function EnterApartment(house, apartmentId, new)
