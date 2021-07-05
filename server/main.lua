@@ -86,11 +86,12 @@ function CreateApartmentId(type)
 
 	while not UniqueFound do
 		AparmentId = tostring(math.random(1, 9999))
-        exports.ghmattimysql:execute('SELECT COUNT(*) as count FROM `apartments` WHERE `name` = @name', {['@name'] = tostring(type .. AparmentId)}, function (result)
+        	exports.ghmattimysql:execute('SELECT COUNT(*) as count FROM `apartments` WHERE `name` = @name', {['@name'] = tostring(type .. AparmentId)}, function (result)
 			if result[1].count == 0 then
 				UniqueFound = true
 			end
 		end)
+		Citizen.Wait(200)
 	end
 	return AparmentId
 end
