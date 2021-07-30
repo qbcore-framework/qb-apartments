@@ -86,32 +86,28 @@ function CreateApartmentId(type)
 
 	while not UniqueFound do
 		AparmentId = tostring(math.random(1, 9999))
-		QBCore.Functions.ExecuteSql(true, "SELECT COUNT(*) as count FROM `apartments` WHERE `name` = '"..tostring(type .. AparmentId).."'", function(result)
-			if result[1].count == 0 then
-				UniqueFound = true
-			end
-		end)
+        local result = exports.ghmattimysql:executeSync('SELECT COUNT(*) as count FROM apartments WHERE name=@name', {['@name'] = tostring(type .. AparmentId)})
+        if result[1].count == 0 then
+            UniqueFound = true
+        end
 	end
 	return AparmentId
 end
 
 function GetApartmentInfo(apartmentId)
     local retval = nil
-    QBCore.Functions.ExecuteSql(true, "SELECT * FROM `apartments` WHERE `name` = '"..apartmentId.."' ", function(result)
-        if result[1] ~= nil then 
-            retval = result[1]
-        end
-    end)
+    local result = exports.ghmattimysql:executeSync('SELECT * FROM apartments WHERE name=@name', {['@name'] = apartmentId})
+    if result[1] ~= nil then 
+        retval = result[1]
+    end
     return retval
 end
 
 function GetOwnedApartment(citizenid)
-    QBCore.Functions.ExecuteSql(true, "SELECT * FROM `apartments` WHERE `citizenid` = '"..citizenid.."' ", function(result)
-        if result[1] ~= nil then 
-            return result[1]
-        end
-        return nil
-    end)
+    local result = exports.ghmattimysql:executeSync('SELECT * FROM apartments WHERE citizenid=@citizenid', {['@citizenid'] = citizenid})
+    if result[1] ~= nil then 
+        return result[1]
+    end
     return nil
 end
 
@@ -154,21 +150,19 @@ end)
 
 QBCore.Functions.CreateCallback('apartments:GetOwnedApartment', function(source, cb, cid)
     if cid ~= nil then
-        exports.ghmattimysql:execute('SELECT * FROM apartments WHERE citizenid=@citizenid', {['@citizenid'] = cid}, function(result)
-            if result[1] ~= nil then 
-                return cb(result[1])
-            end
-            return cb(nil)
-        end)
+        local result = exports.ghmattimysql:executeSync('SELECT * FROM apartments WHERE citizenid=@citizenid', {['@citizenid'] = cid})
+        if result[1] ~= nil then 
+            return cb(result[1])
+        end
+        return cb(nil)
     else
         local src = source
         local Player = QBCore.Functions.GetPlayer(src)
-        exports.ghmattimysql:execute('SELECT * FROM apartments WHERE citizenid=@citizenid', {['@citizenid'] = Player.PlayerData.citizenid}, function(result)
-            if result[1] ~= nil then 
-                return cb(result[1])
-            end
-            return cb(nil)
-        end)
+        local result = exports.ghmattimysql:executeSync('SELECT * FROM apartments WHERE citizenid=@citizenid', {['@citizenid'] = Player.PlayerData.citizenid})
+        if result[1] ~= nil then 
+            return cb(result[1])
+        end
+        return cb(nil)
     end
 end)
 
@@ -176,17 +170,16 @@ QBCore.Functions.CreateCallback('apartments:IsOwner', function(source, cb, apart
 	local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     if Player ~= nil then
-        exports.ghmattimysql:execute('SELECT * FROM apartments WHERE citizenid=@citizenid', {['@citizenid'] = Player.PlayerData.citizenid}, function(result)
-            if result[1] ~= nil then 
-                if result[1].type == apartment then
-                    cb(true)
-                else
-                    cb(false)
-                end
+        local result = exports.ghmattimysql:executeSync('SELECT * FROM apartments WHERE citizenid=@citizenid', {['@citizenid'] = Player.PlayerData.citizenid})
+        if result[1] ~= nil then 
+            if result[1].type == apartment then
+                cb(true)
             else
                 cb(false)
             end
-        end)
+        else
+            cb(false)
+        end
     end
 end)
 
@@ -196,13 +189,12 @@ QBCore.Functions.CreateCallback('apartments:GetOutfits', function(source, cb)
 	local Player = QBCore.Functions.GetPlayer(src)
 
 	if Player then
-		exports.ghmattimysql:execute('SELECT * FROM player_outfits WHERE citizenid=@citizenid', {['@citizenid'] = Player.PlayerData.citizenid}, function(result)
-			if result[1] ~= nil then
-				cb(result)
-			else
-				cb(nil)
-			end
-		end)
+        local result = exports.ghmattimysql:executeSync('SELECT * FROM player_outfits WHERE citizenid=@citizenid', {['@citizenid'] = Player.PlayerData.citizenid})
+        if result[1] ~= nil then
+            cb(result)
+        else
+            cb(nil)
+        end
 	end
 end)
 
