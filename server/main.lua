@@ -42,6 +42,8 @@ AddEventHandler('apartments:server:OpenDoor', function(target, apartmentId, apar
     local src = source
     local OtherPlayer = QBCore.Functions.GetPlayer(target)
     if OtherPlayer ~= nil then
+        local bucket = GetPlayerRoutingBucket(src)
+        SetPlayerRoutingBucket(OtherPlayer, bucket)
         TriggerClientEvent('apartments:client:SpawnInApartment', OtherPlayer.PlayerData.source, apartmentId, apartment)
     end
 end)
