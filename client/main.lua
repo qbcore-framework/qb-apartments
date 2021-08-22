@@ -113,7 +113,7 @@ Citizen.CreateThread(function()
                 elseif not IsOwned then
                     if entrance < 1.2 then
                         QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x, Apartments.Locations[ClosestHouse].coords.enter.y, Apartments.Locations[ClosestHouse].coords.enter.z, '~g~G~w~ - Change Apartment')
-                        if IsControlJustPressed(0, 47) then -- G
+                        if IsControlJustPressed(0, 38) then -- E
                             TriggerServerEvent("apartments:server:UpdateApartment", ClosestHouse)
                             IsOwned = true
                         end
