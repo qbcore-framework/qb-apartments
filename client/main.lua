@@ -3,14 +3,10 @@ local InApartment = false
 local ClosestHouse = nil
 local CurrentApartment = nil
 local IsOwned = false
-
 local CurrentDoorBell = 0
-
 local CurrentOffset = 0
-
 local houseObj = {}
 local POIOffsets = nil
-
 local rangDoorbell = nil
 
 Citizen.CreateThread(function()
@@ -36,7 +32,7 @@ Citizen.CreateThread(function()
                 -- Enter
                 if CurrentDoorBell ~= 0 then
                     if entrancedist < 1.2 then
-                        QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.exit.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.exit.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.exit.z + 0.1, '~g~G~w~ - Open door')
+                        QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.exit.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.exit.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.exit.z + 0.1, '~g~[G]~w~ - Open door')
                         if IsControlJustPressed(0, 47) then -- G
                             TriggerServerEvent("apartments:server:OpenDoor", CurrentDoorBell, CurrentApartment, ClosestHouse)
                             CurrentDoorBell = 0
@@ -46,7 +42,7 @@ Citizen.CreateThread(function()
 
                 --Exit
                 if entrancedist < 3 then
-                    QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.exit.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.exit.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.exit.z, '~g~E~w~ - Leave Apartment')
+                    QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.exit.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.exit.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.exit.z, '~g~[E]~w~ - Leave Apartment')
                     if IsControlJustPressed(0, 38) then -- E
                         LeaveApartment(ClosestHouse)
                     end
@@ -54,7 +50,7 @@ Citizen.CreateThread(function()
 
                 --Stash
                 if stashdist < 1.2 then
-                    QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.stash.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.stash.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.stash.z, '~g~E~w~ - Stash')
+                    QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.stash.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.stash.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.stash.z, '~g~[E]~w~ - Stash')
                     if IsControlJustPressed(0, 38) then -- E
                         if CurrentApartment ~= nil then
                             TriggerServerEvent("inventory:server:OpenInventory", "stash", CurrentApartment)
@@ -67,7 +63,7 @@ Citizen.CreateThread(function()
 
                 --Outfits
                 if outfitsdist < 1.2 then
-                    QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.clothes.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.clothes.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.clothes.z, '~g~E~w~ - Outfits')
+                    QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.clothes.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.clothes.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.clothes.z, '~g~[E]~w~ - Outfits')
                     if IsControlJustPressed(0, 38) then -- E
                         TriggerEvent('qb-clothing:client:openOutfitMenu')
                     end
@@ -77,7 +73,7 @@ Citizen.CreateThread(function()
 
                 --Logout
                 if logoutdist < 1.5 then
-                    QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.logout.x, Apartments.Locations[ClosestHouse].coords.enter.y + POIOffsets.logout.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.logout.z, '~g~E~w~ - Log out')
+                    QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.logout.x, Apartments.Locations[ClosestHouse].coords.enter.y + POIOffsets.logout.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.logout.z, '~g~[E]~w~ - Log out')
                     if IsControlJustPressed(0, 38) then -- E
                         TriggerServerEvent('qb-houses:server:LogoutLocation')
                     end
@@ -91,7 +87,7 @@ Citizen.CreateThread(function()
                 local entrance = #(pos - vector3(Apartments.Locations[ClosestHouse].coords.enter.x, Apartments.Locations[ClosestHouse].coords.enter.y,Apartments.Locations[ClosestHouse].coords.enter.z))
 
                 if doorbelldist < 1.2 then
-                    QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.doorbell.x, Apartments.Locations[ClosestHouse].coords.doorbell.y, Apartments.Locations[ClosestHouse].coords.doorbell.z, '~g~G~w~ - Ring Doorbell')
+                    QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.doorbell.x, Apartments.Locations[ClosestHouse].coords.doorbell.y, Apartments.Locations[ClosestHouse].coords.doorbell.z, '~g~[G]~w~ - Ring Doorbell')
                     if IsControlJustPressed(0, 47) then -- G
                         MenuOwners()
                         Menu.hidden = not Menu.hidden
@@ -101,7 +97,7 @@ Citizen.CreateThread(function()
 
                 if IsOwned then
                    if entrance < 1.2 then
-                        QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x, Apartments.Locations[ClosestHouse].coords.enter.y, Apartments.Locations[ClosestHouse].coords.enter.z, '~g~E~w~ - Enter Apartment')
+                        QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x, Apartments.Locations[ClosestHouse].coords.enter.y, Apartments.Locations[ClosestHouse].coords.enter.z, '~g~[E]~w~ - Enter Apartment')
                         if IsControlJustPressed(0, 38) then -- E
                             QBCore.Functions.TriggerCallback('apartments:GetOwnedApartment', function(result)
                                 if result ~= nil then
@@ -112,7 +108,7 @@ Citizen.CreateThread(function()
                     end
                 elseif not IsOwned then
                     if entrance < 1.2 then
-                        QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x, Apartments.Locations[ClosestHouse].coords.enter.y, Apartments.Locations[ClosestHouse].coords.enter.z, '~g~E~w~ - Change Apartment')
+                        QBCore.Functions.DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x, Apartments.Locations[ClosestHouse].coords.enter.y, Apartments.Locations[ClosestHouse].coords.enter.z, '~g~[E]~w~ - Change Apartment')
                         if IsControlJustPressed(0, 38) then -- E
                             TriggerServerEvent("apartments:server:UpdateApartment", ClosestHouse)
                             IsOwned = true
@@ -257,8 +253,6 @@ function EnterApartment(house, apartmentId, new)
                 NetworkOverrideClockTime(23, 0, 0)
                 --TriggerEvent('instances:client:JoinInstance', apartmentId, house)
                 TriggerServerEvent('qb-apartments:server:SetInsideMeta', house, apartmentId, true)
-                
-
                 TriggerServerEvent("InteractSound_SV:PlayOnSource", "houses_door_close", 0.1)
                 TriggerServerEvent("QBCore:Server:SetMetaData", "currentapartment", CurrentApartment)
             end, house)
