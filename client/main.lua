@@ -3,14 +3,10 @@ local InApartment = false
 local ClosestHouse = nil
 local CurrentApartment = nil
 local IsOwned = false
-
 local CurrentDoorBell = 0
-
 local CurrentOffset = 0
-
 local houseObj = {}
 local POIOffsets = nil
-
 local rangDoorbell = nil
 
 Citizen.CreateThread(function()
