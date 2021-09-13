@@ -7,7 +7,7 @@ AddEventHandler('apartments:server:CreateApartment', function(type, label)
     local num = CreateApartmentId(type)
     local apartmentId = tostring(type .. num)
     local label = tostring(label .. " " .. num)
-    exports.oxmysql:insert('INSERT INTO apartments (name, type, label, citizenid) VALUES (?)', {
+    exports.oxmysql:insert('INSERT INTO apartments (name, type, label, citizenid) VALUES (?, ?, ?, ?)', {
         apartmentId,
         type,
         label,
