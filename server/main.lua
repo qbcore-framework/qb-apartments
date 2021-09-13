@@ -7,11 +7,11 @@ AddEventHandler('apartments:server:CreateApartment', function(type, label)
     local num = CreateApartmentId(type)
     local apartmentId = tostring(type .. num)
     local label = tostring(label .. " " .. num)
-    exports.oxmysql:insert('INSERT INTO apartments (name, type, label, citizenid) VALUES (@name, @type, @label, @citizenid)', {
-        ['@name'] = apartmentId,
-        ['@type'] = type,
-        ['@label'] = label,
-        ['@citizenid'] = Player.PlayerData.citizenid
+    exports.oxmysql:insert('INSERT INTO apartments (name, type, label, citizenid) VALUES (?)', {
+        apartmentId,
+        type,
+        label,
+        Player.PlayerData.citizenid
     })
     TriggerClientEvent('QBCore:Notify', src, "You got a apartment ("..label..")")
     TriggerClientEvent("apartments:client:SpawnInApartment", src, apartmentId, type)
@@ -22,7 +22,7 @@ RegisterServerEvent('apartments:server:UpdateApartment')
 AddEventHandler('apartments:server:UpdateApartment', function(type)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    exports.oxmysql:execute('UPDATE apartments SET type=@type WHERE citizenid=@citizenid', {['@type'] = type, ['@citizenid'] = Player.PlayerData.citizenid})
+    exports.oxmysql:execute('UPDATE apartments SET type = ? WHERE citizenid = ?', { type, Player.PlayerData.citizenid })
     TriggerClientEvent('QBCore:Notify', src, "You have changed apartments")
     TriggerClientEvent("apartments:client:SetHomeBlip", src, type)
 end)
@@ -86,7 +86,7 @@ function CreateApartmentId(type)
 
 	while not UniqueFound do
 		AparmentId = tostring(math.random(1, 9999))
-        local result = exports.oxmysql:fetchSync('SELECT COUNT(*) as count FROM apartments WHERE name=@name', {['@name'] = tostring(type .. AparmentId)})
+        local result = exports.oxmysql:fetchSync('SELECT COUNT(*) as count FROM apartments WHERE name = ?', { tostring(type .. AparmentId) })
         if result[1].count == 0 then
             UniqueFound = true
         end
@@ -96,16 +96,16 @@ end
 
 function GetApartmentInfo(apartmentId)
     local retval = nil
-    local result = exports.oxmysql:fetchSync('SELECT * FROM apartments WHERE name=@name', {['@name'] = apartmentId})
-    if result[1] ~= nil then 
+    local result = exports.oxmysql:fetchSync('SELECT * FROM apartments WHERE name = ?', { apartmentId })
+    if result[1] ~= nil then
         retval = result[1]
     end
     return retval
 end
 
 function GetOwnedApartment(citizenid)
-    local result = exports.oxmysql:fetchSync('SELECT * FROM apartments WHERE citizenid=@citizenid', {['@citizenid'] = citizenid})
-    if result[1] ~= nil then 
+    local result = exports.oxmysql:fetchSync('SELECT * FROM apartments WHERE citizenid = ?', { citizenid })
+    if result[1] ~= nil then
         return result[1]
     end
     return nil
@@ -150,7 +150,7 @@ end)
 
 QBCore.Functions.CreateCallback('apartments:GetOwnedApartment', function(source, cb, cid)
     if cid ~= nil then
-        local result = exports.oxmysql:fetchSync('SELECT * FROM apartments WHERE citizenid=@citizenid', {['@citizenid'] = cid})
+        local result = exports.oxmysql:fetchSync('SELECT * FROM apartments WHERE citizenid = ?', { cid })
         if result[1] ~= nil then 
             return cb(result[1])
         end
@@ -158,7 +158,7 @@ QBCore.Functions.CreateCallback('apartments:GetOwnedApartment', function(source,
     else
         local src = source
         local Player = QBCore.Functions.GetPlayer(src)
-        local result = exports.oxmysql:fetchSync('SELECT * FROM apartments WHERE citizenid=@citizenid', {['@citizenid'] = Player.PlayerData.citizenid})
+        local result = exports.oxmysql:fetchSync('SELECT * FROM apartments WHERE citizenid = ?', { Player.PlayerData.citizenid })
         if result[1] ~= nil then 
             return cb(result[1])
         end
@@ -170,7 +170,7 @@ QBCore.Functions.CreateCallback('apartments:IsOwner', function(source, cb, apart
 	local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     if Player ~= nil then
-        local result = exports.oxmysql:fetchSync('SELECT * FROM apartments WHERE citizenid=@citizenid', {['@citizenid'] = Player.PlayerData.citizenid})
+        local result = exports.oxmysql:fetchSync('SELECT * FROM apartments WHERE citizenid = ?', { Player.PlayerData.citizenid })
         if result[1] ~= nil then 
             if result[1].type == apartment then
                 cb(true)
@@ -189,7 +189,7 @@ QBCore.Functions.CreateCallback('apartments:GetOutfits', function(source, cb)
 	local Player = QBCore.Functions.GetPlayer(src)
 
 	if Player then
-        local result = exports.oxmysql:fetchSync('SELECT * FROM player_outfits WHERE citizenid=@citizenid', {['@citizenid'] = Player.PlayerData.citizenid})
+        local result = exports.oxmysql:fetchSync('SELECT * FROM player_outfits WHERE citizenid = ?', { Player.PlayerData.citizenid })
         if result[1] ~= nil then
             cb(result)
         else
