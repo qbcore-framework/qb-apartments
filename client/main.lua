@@ -303,6 +303,7 @@ function LeaveApartment(house)
     --TriggerEvent('instances:client:LeaveInstance')
     TriggerServerEvent("InteractSound_SV:PlayOnSource", "houses_door_open", 0.1)
     openHouseAnim()
+    TriggerServerEvent("qb-apartments:returnBucket")
     DoScreenFadeOut(500)
     while not IsScreenFadedOut() do
         Citizen.Wait(10)
