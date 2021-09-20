@@ -219,3 +219,9 @@ AddEventHandler('qb-apartments:server:SetInsideMeta', function(house, insideId, 
         Player.Functions.SetMetaData("inside", insideMeta)
     end
 end)
+
+RegisterNetEvent('qb-apartments:returnBucket')
+AddEventHandler('qb-apartments:returnBucket', function()
+    local src = source
+    SetPlayerRoutingBucket(src, 0)
+end)
