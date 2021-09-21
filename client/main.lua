@@ -171,9 +171,11 @@ end)
 
 RegisterNetEvent('apartments:client:SpawnInApartment')
 AddEventHandler('apartments:client:SpawnInApartment', function(apartmentId, apartment)
+    local pos = GetEntityCoords(PlayerPedId())
     if rangDoorbell ~= nil then
-        local dist = #(pos - Apartments.Locations[rangDoorbell].coords.enter)
-        if dist > 5 then
+        local doorbelldist = #(pos - vector3(Apartments.Locations[rangDoorbell].coords.doorbell.x, Apartments.Locations[rangDoorbell].coords.doorbell.y,Apartments.Locations[rangDoorbell].coords.doorbell.z))
+        if doorbelldist > 5 then
+            QBCore.Functions.Notify("You are to far away from the Doorbell")
             return
         end
     end
