@@ -1,5 +1,4 @@
 local QBCore = exports['qb-core']:GetCoreObject()
-local isLoggedIn = LocalPlayer.state['isLoggedIn']
 local InApartment = false
 local ClosestHouse = nil
 local CurrentApartment = nil
@@ -307,7 +306,7 @@ end)
 Citizen.CreateThread(function()
     while true do
         Citizen.Wait(1)
-        if isLoggedIn and ClosestHouse ~= nil then
+        if LocalPlayer.state['isLoggedIn'] and ClosestHouse ~= nil then
             if InApartment then
                 local pos = GetEntityCoords(PlayerPedId())
                 local entrancedist = #(pos - vector3(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.exit.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.exit.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.exit.z))
