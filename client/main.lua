@@ -161,7 +161,7 @@ local function SetClosestApartment()
             current = id
         end
     end
-    if current ~= ClosestHouse and isLoggedIn and not InApartment then
+    if current ~= ClosestHouse and LocalPlayer.state['isLoggedIn'] and not InApartment then
         ClosestHouse = current
         QBCore.Functions.TriggerCallback('apartments:IsOwner', function(result)
             IsOwned = result
@@ -296,7 +296,7 @@ end)
 
 Citizen.CreateThread(function()
     while true do
-        if isLoggedIn and not InApartment then
+        if LocalPlayer.state['isLoggedIn'] and not InApartment then
             SetClosestApartment()
         end
         Citizen.Wait(10000)
