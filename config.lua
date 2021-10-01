@@ -1,6 +1,6 @@
 Apartments = {}
 
-Apartments.Starting = false
+Apartments.Starting = true
 
 Apartments.SpawnOffset = 30
 
