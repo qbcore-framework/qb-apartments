@@ -310,8 +310,9 @@ end)
 
 Citizen.CreateThread(function()
     while true do
-        Citizen.Wait(1)
-        if LocalPlayer.state['isLoggedIn'] and ClosestHouse ~= nil then
+        sleep = 1000
+        if LocalPlayer.state['isLoggedIn'] and ClosestHouse then
+            sleep = 5
             if InApartment then
                 local pos = GetEntityCoords(PlayerPedId())
                 local entrancedist = #(pos - vector3(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.exit.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.exit.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.exit.z))
@@ -409,5 +410,6 @@ Citizen.CreateThread(function()
                 end
             end
         end
+        Wait(sleep)
     end
 end)
