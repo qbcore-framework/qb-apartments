@@ -232,13 +232,18 @@ end
 
 RegisterNetEvent('apartments:client:setupSpawnUI', function(cData)
     QBCore.Functions.TriggerCallback('apartments:GetOwnedApartment', function(result)
-        if result ~= nil then
+        if result then
             TriggerEvent('qb-spawn:client:setupSpawns', cData, false, nil)
             TriggerEvent('qb-spawn:client:openUI', true)
             TriggerEvent("apartments:client:SetHomeBlip", result.type)
         else
-            TriggerEvent('qb-spawn:client:setupSpawns', cData, true, Apartments.Locations)
-            TriggerEvent('qb-spawn:client:openUI', true)
+            if Apartments.Starting then
+                TriggerEvent('qb-spawn:client:setupSpawns', cData, true, Apartments.Locations)
+                TriggerEvent('qb-spawn:client:openUI', true)
+            else
+                TriggerEvent('qb-spawn:client:setupSpawns', cData, false, nil)
+                TriggerEvent('qb-spawn:client:openUI', true)
+            end
         end
     end, cData.citizenid)
 end)
