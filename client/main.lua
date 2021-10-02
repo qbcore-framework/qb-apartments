@@ -75,13 +75,8 @@ local function EnterApartment(house, apartmentId, new)
                 ClosestHouse = house
                 rangDoorbell = nil
                 Citizen.Wait(500)
-                SetRainLevel(0.0)
                 TriggerEvent('qb-weathersync:client:DisableSync')
                 Citizen.Wait(100)
-                SetWeatherTypePersist('EXTRASUNNY')
-                SetWeatherTypeNow('EXTRASUNNY')
-                SetWeatherTypeNowPersist('EXTRASUNNY')
-                NetworkOverrideClockTime(23, 0, 0)
                 TriggerServerEvent('qb-apartments:server:SetInsideMeta', house, apartmentId, true)
                 TriggerServerEvent("InteractSound_SV:PlayOnSource", "houses_door_close", 0.1)
                 TriggerServerEvent("QBCore:Server:SetMetaData", "currentapartment", CurrentApartment)
@@ -101,13 +96,8 @@ local function EnterApartment(house, apartmentId, new)
             InApartment = true
             CurrentApartment = apartmentId
             Citizen.Wait(500)
-            SetRainLevel(0.0)
             TriggerEvent('qb-weathersync:client:DisableSync')
             Citizen.Wait(100)
-            SetWeatherTypePersist('EXTRASUNNY')
-            SetWeatherTypeNow('EXTRASUNNY')
-            SetWeatherTypeNowPersist('EXTRASUNNY')
-            NetworkOverrideClockTime(23, 0, 0)
             TriggerServerEvent("InteractSound_SV:PlayOnSource", "houses_door_close", 0.1)
             TriggerServerEvent("QBCore:Server:SetMetaData", "currentapartment", CurrentApartment)
         end
