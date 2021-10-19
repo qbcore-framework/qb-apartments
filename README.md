@@ -29,7 +29,9 @@ Apartments System for QB-Core Framework :office:
 - [qb-spawn](https://github.com/qbcore-framework/qb-spawn) - To spawn the player at apartment if last location was in apartment
 
 ## Screenshots
-![Inside Apartment](https://imgur.com/uTu8yUL.png)
+![Inside Apartment](https://i.imgur.com/Fh80bw9.jpg)
+![Inside Apartment](https://i.imgur.com/RSQ776S.jpg)
+![Inside Apartment](https://i.imgur.com/HezMr3p.jpg)
 ![Enter Apartment](https://imgur.com/1giGyt1.png)
 ![Stash](https://imgur.com/t6crf4c.png)
 ![Saved Outfits](https://imgur.com/I0YLuQA.png)
