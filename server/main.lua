@@ -73,12 +73,18 @@ end)
 
 RegisterNetEvent('apartments:server:UpdateApartment', function(type, label)
     local src = source
-    local Player = QBCore.Functions.GetPlayer(src)
-    local appId = GetOwnedApartment(Player.PlayerData.citizenid).name:sub(11)
-    local newLabel = label .. " " .. appId
-    exports.oxmysql:execute('UPDATE apartments SET type = ?, label = ? WHERE citizenid = ?', { type, newLabel, Player.PlayerData.citizenid })
-    TriggerClientEvent('QBCore:Notify', src, "You have changed apartments")
-    TriggerClientEvent("apartments:client:SetHomeBlip", src, type)
+    local cid = QBCore.Functions.GetPlayer(src).PlayerData.citizenid
+    QBCore.Functions.TriggerCallback('apartments:GetOwnedApartment', source,  function(result)
+        if result then
+    	    local appId = result.name:sub(#result.type + 1)
+    	    local newLabel = label .. " " .. appId
+   	        exports.oxmysql:execute('UPDATE apartments SET type = ?, label = ? WHERE citizenid = ?', { type, newLabel, cid })
+    	    TriggerClientEvent('QBCore:Notify', src, "You have changed apartments")
+    	    TriggerClientEvent("apartments:client:SetHomeBlip", src, type)
+        else
+            TriggerClientEvent('QBCore:Notify', source, "There was an error changing your apartment", "error")				
+        end
+    end, cid)
 end)
 
 RegisterNetEvent('apartments:server:RingDoor', function(apartmentId, apartment)
