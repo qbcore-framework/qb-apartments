@@ -11,7 +11,7 @@ local rangDoorbell = nil
 
 -- Handlers
 
-AddEventHandler('QBCore:Client:OnPlayerUnload', function()
+RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
     CurrentApartment = nil
     InApartment = false
     CurrentOffset = 0
