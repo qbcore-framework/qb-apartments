@@ -335,6 +335,7 @@ Citizen.CreateThread(function()
                     if IsControlJustPressed(0, 38) then -- E
                         if CurrentApartment ~= nil then
                             TriggerServerEvent("inventory:server:OpenInventory", "stash", CurrentApartment)
+			    TriggerServerEvent("InteractSound_SV:PlayOnSource", "StashOpen", 0.4)
                             TriggerEvent("inventory:client:SetCurrentStash", CurrentApartment)
                         end
                     end
@@ -346,6 +347,7 @@ Citizen.CreateThread(function()
                 if outfitsdist < 1.2 then
                     DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.clothes.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.clothes.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.clothes.z, '~g~E~w~ - Outfits')
                     if IsControlJustPressed(0, 38) then -- E
+                        TriggerServerEvent("InteractSound_SV:PlayOnSource", "Clothes1", 0.4)
                         TriggerEvent('qb-clothing:client:openOutfitMenu')
                     end
                 elseif outfitsdist < 3 then
