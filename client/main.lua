@@ -173,7 +173,7 @@ function OwnerList()
         MenuTitle = "Rang the door at: "
         ClearMenu()
 
-        if apartments == nil then
+        if next(apartments) == nil then
             QBCore.Functions.Notify("There is nobody home..", "error", 3500)
             closeMenuFull()
         else
