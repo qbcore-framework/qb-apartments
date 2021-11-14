@@ -25,11 +25,11 @@ AddEventHandler('onResourceStop', function(resource)
                 TriggerEvent('qb-weathersync:client:EnableSync')
                 DoScreenFadeIn(500)
                 while not IsScreenFadedOut() do
-                    Citizen.Wait(10)
+                    Wait(10)
                 end
                 SetEntityCoords(PlayerPedId(), Apartments.Locations[ClosestHouse].coords.enter.x, Apartments.Locations[ClosestHouse].coords.enter.y,Apartments.Locations[ClosestHouse].coords.enter.z)
                 SetEntityHeading(PlayerPedId(), Apartments.Locations[ClosestHouse].coords.enter.w)
-                Citizen.Wait(1000)
+                Wait(1000)
                 InApartment = false
                 DoScreenFadeIn(1000)
             end)
@@ -42,21 +42,21 @@ end)
 local function loadAnimDict(dict)
     while (not HasAnimDictLoaded(dict)) do
         RequestAnimDict(dict)
-        Citizen.Wait(5)
+        Wait(5)
     end
 end
 
 local function openHouseAnim()
     loadAnimDict("anim@heists@keycard@") 
     TaskPlayAnim( PlayerPedId(), "anim@heists@keycard@", "exit", 5.0, 1.0, -1, 16, 0, 0, 0, 0 )
-    Citizen.Wait(400)
+    Wait(400)
     ClearPedTasks(PlayerPedId())
 end
 
 local function EnterApartment(house, apartmentId, new)
     TriggerServerEvent("InteractSound_SV:PlayOnSource", "houses_door_open", 0.1)
     openHouseAnim()
-    Citizen.Wait(250)
+    Wait(250)
     QBCore.Functions.TriggerCallback('apartments:GetApartmentOffset', function(offset)
         if offset == nil or offset == 0 then
             QBCore.Functions.TriggerCallback('apartments:GetApartmentOffsetNewOffset', function(newoffset)
@@ -67,16 +67,16 @@ local function EnterApartment(house, apartmentId, new)
                 TriggerServerEvent("apartments:server:AddObject", apartmentId, house, CurrentOffset)
                 local coords = { x = Apartments.Locations[house].coords.enter.x, y = Apartments.Locations[house].coords.enter.y, z = Apartments.Locations[house].coords.enter.z - CurrentOffset}
                 data = exports['qb-interior']:CreateApartmentFurnished(coords)
-                Citizen.Wait(100)
+                Wait(100)
                 houseObj = data[1]
                 POIOffsets = data[2]
                 InApartment = true
                 CurrentApartment = apartmentId
                 ClosestHouse = house
                 rangDoorbell = nil
-                Citizen.Wait(500)
+                Wait(500)
                 TriggerEvent('qb-weathersync:client:DisableSync')
-                Citizen.Wait(100)
+                Wait(100)
                 TriggerServerEvent('qb-apartments:server:SetInsideMeta', house, apartmentId, true)
                 TriggerServerEvent("InteractSound_SV:PlayOnSource", "houses_door_close", 0.1)
                 TriggerServerEvent("QBCore:Server:SetMetaData", "currentapartment", CurrentApartment)
@@ -90,14 +90,14 @@ local function EnterApartment(house, apartmentId, new)
             TriggerServerEvent("apartments:server:AddObject", apartmentId, house, CurrentOffset)
             local coords = { x = Apartments.Locations[ClosestHouse].coords.enter.x, y = Apartments.Locations[ClosestHouse].coords.enter.y, z = Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset}
             data = exports['qb-interior']:CreateApartmentFurnished(coords)
-            Citizen.Wait(100)
+            Wait(100)
             houseObj = data[1]
             POIOffsets = data[2]
             InApartment = true
             CurrentApartment = apartmentId
-            Citizen.Wait(500)
+            Wait(500)
             TriggerEvent('qb-weathersync:client:DisableSync')
-            Citizen.Wait(100)
+            Wait(100)
             TriggerServerEvent("InteractSound_SV:PlayOnSource", "houses_door_close", 0.1)
             TriggerServerEvent("QBCore:Server:SetMetaData", "currentapartment", CurrentApartment)
         end
@@ -123,7 +123,7 @@ local function LeaveApartment(house)
         TriggerEvent('qb-weathersync:client:EnableSync')
         SetEntityCoords(PlayerPedId(), Apartments.Locations[house].coords.enter.x, Apartments.Locations[house].coords.enter.y,Apartments.Locations[house].coords.enter.z)
         SetEntityHeading(PlayerPedId(), Apartments.Locations[house].coords.enter.w)
-        Citizen.Wait(1000)
+        Wait(1000)
         TriggerServerEvent("apartments:server:RemoveObject", CurrentApartment, house)
         TriggerServerEvent('qb-apartments:server:SetInsideMeta', CurrentApartment, false)
         CurrentApartment = nil
@@ -258,7 +258,7 @@ RegisterNetEvent('qb-apartments:client:LastLocationHouse', function(apartmentTyp
 end)
 
 RegisterNetEvent('apartments:client:SetHomeBlip', function(home)
-    Citizen.CreateThread(function()
+    CreateThread(function()
         SetClosestApartment()
         for name, apartment in pairs(Apartments.Locations) do
             RemoveBlip(Apartments.Locations[name].blip)
@@ -289,16 +289,16 @@ end)
 
 -- Threads
 
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
         if LocalPlayer.state['isLoggedIn'] and not InApartment then
             SetClosestApartment()
         end
-        Citizen.Wait(10000)
+        Wait(10000)
     end
 end)
 
-Citizen.CreateThread(function()
+CreateThread(function()
     while true do
         sleep = 1000
         if LocalPlayer.state['isLoggedIn'] and ClosestHouse then
