@@ -47,7 +47,7 @@ local function loadAnimDict(dict)
 end
 
 local function openHouseAnim()
-    loadAnimDict("anim@heists@keycard@") 
+    loadAnimDict("anim@heists@keycard@")
     TaskPlayAnim( PlayerPedId(), "anim@heists@keycard@", "exit", 5.0, 1.0, -1, 16, 0, 0, 0, 0 )
     Wait(400)
     ClearPedTasks(PlayerPedId())
@@ -160,47 +160,49 @@ local function SetClosestApartment()
 end
 
 function MenuOwners()
-    ped = PlayerPedId();
-    MenuTitle = "Owners"
-    ClearMenu()
-    Menu.addButton("Ring the doorbell", "OwnerList", nil)
-    Menu.addButton("Close Menu", "closeMenuFull", nil) 
-end
-
-function OwnerList()
     QBCore.Functions.TriggerCallback('apartments:GetAvailableApartments', function(apartments)
-        ped = PlayerPedId();
-        MenuTitle = "Rang the door at: "
-        ClearMenu()
-
         if next(apartments) == nil then
-            QBCore.Functions.Notify("There is nobody home..", "error", 3500)
+            QBCore.Functions.Notify(Apartments.Language['nobody_home'], "error", 3500)
             closeMenuFull()
         else
+            local vehicleMenu = {
+                {
+                    header = Apartments.Language['tennants'],
+                    isMenuHeader = true
+                }
+            }
+
             for k, v in pairs(apartments) do
-                Menu.addButton(v, "RingDoor", k) 
+                vehicleMenu[#vehicleMenu+1] = {
+                    header = v,
+                    txt = "",
+                    params = {
+                        event = "apartments:client:RingMenu",
+                        args = {
+                            apartmentId = k
+                        }
+                    }
+
+                }
             end
+
+            vehicleMenu[#vehicleMenu+1] = {
+                header = Apartments.Language['close_menu'],
+                txt = "",
+                params = {
+                    event = "qb-menu:client:closeMenu"
+                }
+
+            }
+            exports['qb-menu']:openMenu(vehicleMenu)
         end
-        Menu.addButton("Back", "MenuOwners",nil)
     end, ClosestHouse)
 end
 
-function RingDoor(apartmentId)
-    rangDoorbell = ClosestHouse
-    TriggerServerEvent("InteractSound_SV:PlayOnSource", "doorbell", 0.1)
-    TriggerServerEvent("apartments:server:RingDoor", apartmentId, ClosestHouse)
-end
+
 
 function closeMenuFull()
-    Menu.hidden = true
-    currentGarage = nil
-    ClearMenu()
-end
-
-function ClearMenu()
-	Menu.GUI = {}
-	Menu.buttonCount = 0
-	Menu.selection = 0
+    exports['qb-menu']:closeMenu()
 end
 
 local function DrawText3D(x, y, z, text)
@@ -219,7 +221,6 @@ local function DrawText3D(x, y, z, text)
 end
 
 -- Events
-
 RegisterNetEvent('apartments:client:setupSpawnUI', function(cData)
     QBCore.Functions.TriggerCallback('apartments:GetOwnedApartment', function(result)
         if result then
@@ -241,9 +242,9 @@ end)
 RegisterNetEvent('apartments:client:SpawnInApartment', function(apartmentId, apartment)
     local pos = GetEntityCoords(PlayerPedId())
     if rangDoorbell ~= nil then
-        local doorbelldist = #(pos - vector3(Apartments.Locations[rangDoorbell].coords.doorbell.x, Apartments.Locations[rangDoorbell].coords.doorbell.y,Apartments.Locations[rangDoorbell].coords.doorbell.z))
+        local doorbelldist = #(pos - vector3(Apartments.Locations[rangDoorbell].coords.enter.x, Apartments.Locations[rangDoorbell].coords.enter.y,Apartments.Locations[rangDoorbell].coords.enter.z))
         if doorbelldist > 5 then
-            QBCore.Functions.Notify("You are to far away from the Doorbell")
+            QBCore.Functions.Notify(Apartments.Language['to_far_from_door'])
             return
         end
     end
@@ -281,10 +282,61 @@ RegisterNetEvent('apartments:client:SetHomeBlip', function(home)
     end)
 end)
 
+RegisterNetEvent('apartments:client:RingMenu', function(data)
+    rangDoorbell = ClosestHouse
+    TriggerServerEvent("InteractSound_SV:PlayOnSource", "doorbell", 0.1)
+    TriggerServerEvent("apartments:server:RingDoor", data.apartmentId, ClosestHouse)
+end)
+
 RegisterNetEvent('apartments:client:RingDoor', function(player, house)
     CurrentDoorBell = player
     TriggerServerEvent("InteractSound_SV:PlayOnSource", "doorbell", 0.1)
-    QBCore.Functions.Notify("Someone Is At The Door!")
+    QBCore.Functions.Notify(Apartments.Language['at_the_door'])
+end)
+
+RegisterNetEvent('apartments:client:DoorbellMenu', function()
+    MenuOwners()
+end)
+
+RegisterNetEvent('apartments:client:EnterApartment', function()
+    QBCore.Functions.TriggerCallback('apartments:GetOwnedApartment', function(result)
+        if result ~= nil then
+            EnterApartment(ClosestHouse, result.name)
+        end
+    end)
+end)
+
+RegisterNetEvent('apartments:client:UpdateApartment', function()
+    local apartmentType = ClosestHouse
+    local apartmentLabel = Apartments.Locations[ClosestHouse].label
+    TriggerServerEvent("apartments:server:UpdateApartment", apartmentType, apartmentLabel)
+    IsOwned = true
+end)
+
+RegisterNetEvent('apartments:client:OpenDoor', function()
+    TriggerServerEvent("apartments:server:OpenDoor", CurrentDoorBell, CurrentApartment, ClosestHouse)
+    CurrentDoorBell = 0
+end)
+
+RegisterNetEvent('apartments:client:LeaveApartment', function()
+    LeaveApartment(ClosestHouse)
+end)
+
+RegisterNetEvent('apartments:client:OpenStash', function()
+    if CurrentApartment ~= nil then
+        TriggerServerEvent("inventory:server:OpenInventory", "stash", CurrentApartment)
+        TriggerServerEvent("InteractSound_SV:PlayOnSource", "StashOpen", 0.4)
+        TriggerEvent("inventory:client:SetCurrentStash", CurrentApartment)
+    end
+end)
+
+RegisterNetEvent('apartments:client:ChangeOutfit', function()
+    TriggerServerEvent("InteractSound_SV:PlayOnSource", "Clothes1", 0.4)
+    TriggerEvent('qb-clothing:client:openOutfitMenu')
+end)
+
+RegisterNetEvent('apartments:client:Logout', function()
+    TriggerServerEvent('qb-houses:server:LogoutLocation')
 end)
 
 -- Threads
@@ -299,11 +351,15 @@ CreateThread(function()
 end)
 
 CreateThread(function()
+    local shownHeader = false
+
     while true do
-        sleep = 1000
+        local sleep = 1000
         if LocalPlayer.state['isLoggedIn'] and ClosestHouse then
             sleep = 5
             if InApartment then
+                local headerMenu = {}
+                local inRange = false
                 local pos = GetEntityCoords(PlayerPedId())
                 local entrancedist = #(pos - vector3(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.exit.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.exit.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.exit.z))
                 local stashdist = #(pos - vector3(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.stash.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.stash.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.stash.z))
@@ -312,93 +368,153 @@ CreateThread(function()
 
                 -- Enter
                 if CurrentDoorBell ~= 0 then
-                    if entrancedist < 1.2 then
-                        DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.exit.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.exit.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.exit.z + 0.1, '~g~G~w~ - Open door')
-                        if IsControlJustPressed(0, 47) then -- G
-                            TriggerServerEvent("apartments:server:OpenDoor", CurrentDoorBell, CurrentApartment, ClosestHouse)
-                            CurrentDoorBell = 0
-                        end
+                    if entrancedist <= 1 then
+                        inRange = true
+                        headerMenu[#headerMenu+1] = {
+                            header = Apartments.Language['open_door'],
+                            params = {
+                                event = 'apartments:client:OpenDoor',
+                                args = {}
+                            }
+                        }
                     end
                 end
 
                 --Exit
-                if entrancedist < 3 then
-                    DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.exit.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.exit.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.exit.z, '~g~E~w~ - Leave Apartment')
-                    if IsControlJustPressed(0, 38) then -- E
-                        LeaveApartment(ClosestHouse)
-                    end
+                if entrancedist <= 1 then
+                    inRange = true
+                    headerMenu[#headerMenu+1] = {
+                        header = Apartments.Language['leave'],
+                        params = {
+                            event = 'apartments:client:LeaveApartment',
+                            args = {}
+                        }
+                    }
+                elseif entrancedist <= 3 then
+                    local x = Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.exit.x
+                    local y = Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.exit.y
+                    local z = Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.exit.z
+                    DrawMarker(2, x, y, z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 200, 0, 0, 222, false, false, false, true, false, false, false)
                 end
 
+
                 --Stash
-                if stashdist < 1.2 then
-                    DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.stash.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.stash.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.stash.z, '~g~E~w~ - Stash')
-                    if IsControlJustPressed(0, 38) then -- E
-                        if CurrentApartment ~= nil then
-                            TriggerServerEvent("inventory:server:OpenInventory", "stash", CurrentApartment)
-			    TriggerServerEvent("InteractSound_SV:PlayOnSource", "StashOpen", 0.4)
-                            TriggerEvent("inventory:client:SetCurrentStash", CurrentApartment)
-                        end
-                    end
-                elseif stashdist < 3 then
-                    DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.stash.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.stash.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.stash.z, 'Stash')
+                if stashdist <= 1 then
+                    inRange = true
+                    headerMenu[#headerMenu+1] = {
+                        header = Apartments.Language['open_stash'],
+                        params = {
+                            event = 'apartments:client:OpenStash',
+                            args = {}
+                        }
+                    }
+                elseif stashdist <= 3 then
+                    local x = Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.stash.x
+                    local y = Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.stash.y
+                    local z = Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.stash.z + 1.0
+                    DrawMarker(2, x, y, z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 200, 0, 0, 222, false, false, false, true, false, false, false)
                 end
 
                 --Outfits
-                if outfitsdist < 1.2 then
-                    DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.clothes.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.clothes.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.clothes.z, '~g~E~w~ - Outfits')
-                    if IsControlJustPressed(0, 38) then -- E
-                        TriggerServerEvent("InteractSound_SV:PlayOnSource", "Clothes1", 0.4)
-                        TriggerEvent('qb-clothing:client:openOutfitMenu')
-                    end
-                elseif outfitsdist < 3 then
-                    DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.clothes.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.clothes.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.clothes.z, 'Outfits')
+                if outfitsdist <= 1 then
+                    inRange = true
+                    headerMenu[#headerMenu+1] = {
+                        header = Apartments.Language['change_outfit'],
+                        params = {
+                            event = 'apartments:client:ChangeOutfit',
+                            args = {}
+                        }
+                    }
+                elseif outfitsdist <= 3 then
+                    local x = Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.clothes.x
+                    local y = Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.clothes.y
+                    local z = Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.clothes.z
+                    DrawMarker(2, x, y, z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 200, 0, 0, 222, false, false, false, true, false, false, false)
                 end
 
                 --Logout
-                if logoutdist < 1.5 then
-                    DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.logout.x, Apartments.Locations[ClosestHouse].coords.enter.y + POIOffsets.logout.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.logout.z, '~g~E~w~ - Log out')
-                    if IsControlJustPressed(0, 38) then -- E
-                        TriggerServerEvent('qb-houses:server:LogoutLocation')
-                    end
-                elseif logoutdist < 3 then
-                    DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.logout.x, Apartments.Locations[ClosestHouse].coords.enter.y + POIOffsets.logout.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.logout.z, 'Log out')
+                if logoutdist <= 1 then
+                    inRange = true
+                    headerMenu[#headerMenu+1] = {
+                        header = Apartments.Language['logout'],
+                        params = {
+                            event = 'apartments:client:Logout',
+                            args = {}
+                        }
+                    }
+                elseif logoutdist <= 3 then
+                    local x = Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.logout.x
+                    local y = Apartments.Locations[ClosestHouse].coords.enter.y + POIOffsets.logout.y
+                    local z = Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.logout.z
+                    DrawMarker(2, x, y, z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.3, 0.2, 0.15, 200, 0, 0, 222, false, false, false, true, false, false, false)
+                end
+
+                if inRange and not shownHeader then
+                    shownHeader = true
+                    exports['qb-menu']:showHeader(headerMenu)
+                end
+
+                if not inRange and shownHeader then
+                    shownHeader = false
+                    exports['qb-menu']:closeMenu()
                 end
 
             else
+                local headerMenu = {}
+                local inRange = false
                 local pos = GetEntityCoords(PlayerPedId())
-                local doorbelldist = #(pos - vector3(Apartments.Locations[ClosestHouse].coords.doorbell.x, Apartments.Locations[ClosestHouse].coords.doorbell.y,Apartments.Locations[ClosestHouse].coords.doorbell.z))
                 local entrance = #(pos - vector3(Apartments.Locations[ClosestHouse].coords.enter.x, Apartments.Locations[ClosestHouse].coords.enter.y,Apartments.Locations[ClosestHouse].coords.enter.z))
 
-                if doorbelldist < 1.2 then
-                    DrawText3D(Apartments.Locations[ClosestHouse].coords.doorbell.x, Apartments.Locations[ClosestHouse].coords.doorbell.y, Apartments.Locations[ClosestHouse].coords.doorbell.z, '~g~G~w~ - Ring Doorbell')
-                    if IsControlJustPressed(0, 47) then -- G
-                        MenuOwners()
-                        Menu.hidden = not Menu.hidden
-                    end
-                    Menu.renderGUI()
-                end
-
                 if IsOwned then
-                   if entrance < 1.2 then
-                        DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x, Apartments.Locations[ClosestHouse].coords.enter.y, Apartments.Locations[ClosestHouse].coords.enter.z, '~g~E~w~ - Enter Apartment')
-                        if IsControlJustPressed(0, 38) then -- E
-                            QBCore.Functions.TriggerCallback('apartments:GetOwnedApartment', function(result)
-                                if result ~= nil then
-                                    EnterApartment(ClosestHouse, result.name)
-                                end
-                            end)
-                        end
+                   if entrance <= 1 then
+                        inRange = true
+                        headerMenu[#headerMenu+1] = {
+                            header = Apartments.Language['enter'],
+                            params = {
+                                event = 'apartments:client:EnterApartment',
+                                args = {}
+                            }
+                        }
+
+                        headerMenu[#headerMenu+1] = {
+                            header = Apartments.Language['ring_doorbell'],
+                            params = {
+                                event = 'apartments:client:DoorbellMenu',
+                                args = {}
+                            }
+                        }
                     end
                 elseif not IsOwned then
-                    if entrance < 1.2 then
-                        DrawText3D(Apartments.Locations[ClosestHouse].coords.enter.x, Apartments.Locations[ClosestHouse].coords.enter.y, Apartments.Locations[ClosestHouse].coords.enter.z, '~g~E~w~ - Change Apartment')
-                        if IsControlJustPressed(0, 38) then -- E
-                            local apartmentType = ClosestHouse
-                            local apartmentLabel = Apartments.Locations[ClosestHouse].label
-                            TriggerServerEvent("apartments:server:UpdateApartment", apartmentType, apartmentLabel)
-                            IsOwned = true
-                        end
+                    if entrance <= 1 then
+                        inRange = true
+                        headerMenu[#headerMenu+1] = {
+                            header = Apartments.Language['move_here'],
+                            params = {
+                                event = 'apartments:client:UpdateApartment',
+                                args = {}
+                            }
+                        }
+
+
+                        headerMenu[#headerMenu+1] = {
+                            header = Apartments.Language['ring_doorbell'],
+                            params = {
+                                event = 'apartments:client:DoorbellMenu',
+                                args = {}
+                            }
+                        }
+
                     end
+                end
+
+                if inRange and not shownHeader then
+                    shownHeader = true
+                    exports['qb-menu']:showHeader(headerMenu)
+                end
+
+                if not inRange and shownHeader then
+                    shownHeader = false
+                    exports['qb-menu']:closeMenu()
                 end
             end
         end
