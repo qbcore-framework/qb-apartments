@@ -9,8 +9,7 @@ shared_script 'config.lua'
 server_script 'server/main.lua'
 
 client_scripts {
-	'client/main.lua',
-	'client/gui.lua'
+	'client/main.lua'
 }
 
 dependencies {
