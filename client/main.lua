@@ -399,7 +399,7 @@ CreateThread(function()
 
 
                 --Stash
-                if stashdist <= 1 then
+                if stashdist <= 1.2 then
                     inRange = true
                     headerMenu[#headerMenu+1] = {
                         header = Apartments.Language['open_stash'],
