@@ -66,7 +66,7 @@ RegisterNetEvent('apartments:server:CreateApartment', function(type, label)
         label,
         Player.PlayerData.citizenid
     })
-    TriggerClientEvent('QBCore:Notify', src, "You got a apartment ("..label..")")
+    TriggerClientEvent('QBCore:Notify', src, Apartments.Language['receive_apart'].." ("..label..")")
     TriggerClientEvent("apartments:client:SpawnInApartment", src, apartmentId, type)
     TriggerClientEvent("apartments:client:SetHomeBlip", src, type)
 end)
@@ -75,7 +75,7 @@ RegisterNetEvent('apartments:server:UpdateApartment', function(type, label)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     exports.oxmysql:execute('UPDATE apartments SET type = ?, label = ? WHERE citizenid = ?', { type, label, Player.PlayerData.citizenid })
-    TriggerClientEvent('QBCore:Notify', src, "You have changed apartments")
+    TriggerClientEvent('QBCore:Notify', src, Apartments.Language['changed_apart'])
     TriggerClientEvent("apartments:client:SetHomeBlip", src, type)
 end)
 
@@ -169,7 +169,7 @@ end)
 QBCore.Functions.CreateCallback('apartments:GetOwnedApartment', function(source, cb, cid)
     if cid ~= nil then
         local result = exports.oxmysql:executeSync('SELECT * FROM apartments WHERE citizenid = ?', { cid })
-        if result[1] ~= nil then 
+        if result[1] ~= nil then
             return cb(result[1])
         end
         return cb(nil)
@@ -177,7 +177,7 @@ QBCore.Functions.CreateCallback('apartments:GetOwnedApartment', function(source,
         local src = source
         local Player = QBCore.Functions.GetPlayer(src)
         local result = exports.oxmysql:executeSync('SELECT * FROM apartments WHERE citizenid = ?', { Player.PlayerData.citizenid })
-        if result[1] ~= nil then 
+        if result[1] ~= nil then
             return cb(result[1])
         end
         return cb(nil)
@@ -189,7 +189,7 @@ QBCore.Functions.CreateCallback('apartments:IsOwner', function(source, cb, apart
     local Player = QBCore.Functions.GetPlayer(src)
     if Player ~= nil then
         local result = exports.oxmysql:executeSync('SELECT * FROM apartments WHERE citizenid = ?', { Player.PlayerData.citizenid })
-        if result[1] ~= nil then 
+        if result[1] ~= nil then
             if result[1].type == apartment then
                 cb(true)
             else
