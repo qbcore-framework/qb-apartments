@@ -28,17 +28,20 @@ end
 
 -- Events
 
-RegisterNetEvent('qb-apartments:server:SetInsideMeta', function(house, insideId, bool)
+RegisterNetEvent('qb-apartments:server:SetInsideMeta', function(house, insideId, bool, isVisiting)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local insideMeta = Player.PlayerData.metadata["inside"]
 
     if bool then
-        insideMeta.apartment.apartmentType = house
-        insideMeta.apartment.apartmentId = insideId
-        insideMeta.house = nil
-
-        Player.Functions.SetMetaData("inside", insideMeta)
+        local routeId = insideId:gsub("[^%-%d]", "")
+        if not isVisiting then
+            insideMeta.apartment.apartmentType = house
+            insideMeta.apartment.apartmentId = insideId
+            insideMeta.house = nil
+            Player.Functions.SetMetaData("inside", insideMeta)
+        end
+        QBCore.Functions.SetPlayerBucket(src, tonumber(routeId))
     else
         insideMeta.apartment.apartmentType = nil
         insideMeta.apartment.apartmentId = nil
@@ -46,6 +49,7 @@ RegisterNetEvent('qb-apartments:server:SetInsideMeta', function(house, insideId,
 
 
         Player.Functions.SetMetaData("inside", insideMeta)
+        QBCore.Functions.SetPlayerBucket(src, 0)
     end
 end)
 
