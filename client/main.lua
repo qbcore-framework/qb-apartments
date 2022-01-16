@@ -138,20 +138,16 @@ end
 local function SetClosestApartment()
     local pos = GetEntityCoords(PlayerPedId())
     local current = nil
-    local dist = nil
+    local dist = 100
     for id, house in pairs(Apartments.Locations) do
         local distcheck = #(pos - vector3(Apartments.Locations[id].coords.enter.x, Apartments.Locations[id].coords.enter.y, Apartments.Locations[id].coords.enter.z))
-        if current ~= nil then
+
             if distcheck < dist then
                 current = id
-                dist = distcheck
             end
-        else
-            dist = distcheck
-            current = id
-        end
+
     end
-    if current ~= ClosestHouse and LocalPlayer.state['isLoggedIn'] and not InApartment then
+    if current ~= ClosestHouse and LocalPlayer.state.isLoggedIn and not InApartment then
         ClosestHouse = current
         QBCore.Functions.TriggerCallback('apartments:IsOwner', function(result)
             IsOwned = result
@@ -343,10 +339,10 @@ end)
 
 CreateThread(function()
     while true do
-        if LocalPlayer.state['isLoggedIn'] and not InApartment then
+        if LocalPlayer.state.isLoggedIn and not InApartment then
             SetClosestApartment()
         end
-        Wait(10000)
+        Wait(5000)
     end
 end)
 
@@ -355,7 +351,7 @@ CreateThread(function()
 
     while true do
         local sleep = 1000
-        if LocalPlayer.state['isLoggedIn'] and ClosestHouse then
+        if LocalPlayer.state.isLoggedIn and ClosestHouse then
             sleep = 5
             if InApartment then
                 local headerMenu = {}
