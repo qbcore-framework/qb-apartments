@@ -159,12 +159,12 @@ end
 function MenuOwners()
     QBCore.Functions.TriggerCallback('apartments:GetAvailableApartments', function(apartments)
         if next(apartments) == nil then
-            QBCore.Functions.Notify(Apartments.Language['nobody_home'], "error", 3500)
+            QBCore.Functions.Notify(Lang:t('error.nobody_home'), "error", 3500)
             closeMenuFull()
         else
             local vehicleMenu = {
                 {
-                    header = Apartments.Language['tennants'],
+                    header = Lang:t('text.tennants'),
                     isMenuHeader = true
                 }
             }
@@ -184,7 +184,7 @@ function MenuOwners()
             end
 
             vehicleMenu[#vehicleMenu+1] = {
-                header = Apartments.Language['close_menu'],
+                header = Lang:t('text.close_menu'),
                 txt = "",
                 params = {
                     event = "qb-menu:client:closeMenu"
@@ -241,7 +241,7 @@ RegisterNetEvent('apartments:client:SpawnInApartment', function(apartmentId, apa
     if rangDoorbell ~= nil then
         local doorbelldist = #(pos - vector3(Apartments.Locations[rangDoorbell].coords.enter.x, Apartments.Locations[rangDoorbell].coords.enter.y,Apartments.Locations[rangDoorbell].coords.enter.z))
         if doorbelldist > 5 then
-            QBCore.Functions.Notify(Apartments.Language['to_far_from_door'])
+            QBCore.Functions.Notify(Lang:t('error.to_far_from_door'))
             return
         end
     end
@@ -288,7 +288,7 @@ end)
 RegisterNetEvent('apartments:client:RingDoor', function(player, house)
     CurrentDoorBell = player
     TriggerServerEvent("InteractSound_SV:PlayOnSource", "doorbell", 0.1)
-    QBCore.Functions.Notify(Apartments.Language['at_the_door'])
+    QBCore.Functions.Notify(Lang:t('info.at_the_door'))
 end)
 
 RegisterNetEvent('apartments:client:DoorbellMenu', function()
@@ -368,7 +368,7 @@ CreateThread(function()
                     if entrancedist <= 1 then
                         inRange = true
                         headerMenu[#headerMenu+1] = {
-                            header = Apartments.Language['open_door'],
+                            header = Lang:t('text.open_door'),
                             params = {
                                 event = 'apartments:client:OpenDoor',
                                 args = {}
@@ -381,7 +381,7 @@ CreateThread(function()
                 if entrancedist <= 1 then
                     inRange = true
                     headerMenu[#headerMenu+1] = {
-                        header = Apartments.Language['leave'],
+                        header = Lang:t('text.leave'),
                         params = {
                             event = 'apartments:client:LeaveApartment',
                             args = {}
@@ -399,7 +399,7 @@ CreateThread(function()
                 if stashdist <= 1.2 then
                     inRange = true
                     headerMenu[#headerMenu+1] = {
-                        header = Apartments.Language['open_stash'],
+                        header = Lang:t('text.open_stash'),
                         params = {
                             event = 'apartments:client:OpenStash',
                             args = {}
@@ -416,7 +416,7 @@ CreateThread(function()
                 if outfitsdist <= 1 then
                     inRange = true
                     headerMenu[#headerMenu+1] = {
-                        header = Apartments.Language['change_outfit'],
+                        header = Lang:t('text.change_outfit'),
                         params = {
                             event = 'apartments:client:ChangeOutfit',
                             args = {}
@@ -433,7 +433,7 @@ CreateThread(function()
                 if logoutdist <= 1 then
                     inRange = true
                     headerMenu[#headerMenu+1] = {
-                        header = Apartments.Language['logout'],
+                        header = Lang:t('text.logout'),
                         params = {
                             event = 'apartments:client:Logout',
                             args = {}
@@ -466,7 +466,7 @@ CreateThread(function()
                    if entrance <= 1 then
                         inRange = true
                         headerMenu[#headerMenu+1] = {
-                            header = Apartments.Language['enter'],
+                            header = Lang:t('text.enter'),
                             params = {
                                 event = 'apartments:client:EnterApartment',
                                 args = {}
@@ -474,7 +474,7 @@ CreateThread(function()
                         }
 
                         headerMenu[#headerMenu+1] = {
-                            header = Apartments.Language['ring_doorbell'],
+                            header = Lang:t('text.ring_doorbell'),
                             params = {
                                 event = 'apartments:client:DoorbellMenu',
                                 args = {}
@@ -485,7 +485,7 @@ CreateThread(function()
                     if entrance <= 1 then
                         inRange = true
                         headerMenu[#headerMenu+1] = {
-                            header = Apartments.Language['move_here'],
+                            header = Lang:t('text.move_here'),
                             params = {
                                 event = 'apartments:client:UpdateApartment',
                                 args = {}
@@ -494,7 +494,7 @@ CreateThread(function()
 
 
                         headerMenu[#headerMenu+1] = {
-                            header = Apartments.Language['ring_doorbell'],
+                            header = Lang:t('text.ring_doorbell'),
                             params = {
                                 event = 'apartments:client:DoorbellMenu',
                                 args = {}
