@@ -1,0 +1,30 @@
+local Translations = {
+    error = {
+        to_far_from_door = 'Jste příliš daleko od zvonku',
+        nobody_home = 'Nikdo není doma..',
+    },
+    success = {
+        receive_apart = 'Přestěhovali jste se',
+        changed_apart = 'Přestěhovali jste se',
+    },
+    info = {
+        at_the_door = 'Někdo je u dveří!',
+    },
+    text = {
+        enter = 'Vstoupit do apartmánu',
+        ring_doorbell = 'Zazvoňte na zvonek',
+        logout = 'Změnit charakter',
+        change_outfit = 'Změnit oblečení',
+        open_stash = 'Otevřít skrýš',
+        move_here = 'Přestěhovat se sem (1700$)',
+        open_door = 'Otevřít dveře',
+        leave = 'Opustit apartmán',
+        close_menu = '⬅ Uzavřít Menu',
+        tennants = 'Nájemníci',
+    },
+}
+
+Lang = Locale:new({
+    phrases = Translations,
+    warnOnMissing = true
+})
