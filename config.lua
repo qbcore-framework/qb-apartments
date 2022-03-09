@@ -4,7 +4,7 @@ Apartments.SpawnOffset = 30
 
 -- **** IMPORTANT ****
 -- UseTarget should only be set to true when using qb-target
-Apartments.UseTarget = false
+Apartments.UseTarget = GetConvar('UseTarget', 'false') == 'true'
 
 Apartments.Locations = {
     ["apartment1"] = {
