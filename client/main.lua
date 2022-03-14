@@ -55,7 +55,7 @@ local function RegisterApartmentEntranceZone(apartmentID, apartmentData)
     boxData.zone = zone
 end
 
-local function RegisterInApartmentZone(targetKey, coords, heading, triggerVar, text)
+local function RegisterInApartmentZone(targetKey, coords, heading, text)
     if not InApartment then
         return
     end
@@ -245,10 +245,10 @@ local function SetInApartmentTargets()
             },
         })
     else
-        RegisterInApartmentZone('entrancePos', entrancePos, 0, IsInsideExitZone, Lang:t('text.options'))
-        RegisterInApartmentZone('stashPos', stashPos, 0, IsInsideStashZone, "[E] " .. Lang:t('text.open_stash'))
-        RegisterInApartmentZone('outfitsPos', outfitsPos, 0, IsInsideOutfitsZone, "[E] " .. Lang:t('text.change_outfit'))
-        RegisterInApartmentZone('logoutPos', logoutPos, 0, IsInsideLogoutZone, "[E] " .. Lang:t('text.logout'))
+        RegisterInApartmentZone('entrancePos', entrancePos, 0, Lang:t('text.options'))
+        RegisterInApartmentZone('stashPos', stashPos, 0, "[E] " .. Lang:t('text.open_stash'))
+        RegisterInApartmentZone('outfitsPos', outfitsPos, 0, "[E] " .. Lang:t('text.change_outfit'))
+        RegisterInApartmentZone('logoutPos', logoutPos, 0, "[E] " .. Lang:t('text.logout'))
     end
 end
 
