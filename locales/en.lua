@@ -12,6 +12,7 @@ local Translations = {
         at_the_door = 'Someone is at the door!',
     },
     text = {
+        options = '[E] Apartment Options',
         enter = 'Enter Apartment',
         ring_doorbell = 'Ring Doorbell',
         logout = 'Logout Character',
