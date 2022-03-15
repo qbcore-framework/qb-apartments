@@ -36,6 +36,11 @@ Apartments System for QB-Core Framework :office:
 ![Saved Outfits](https://imgur.com/I0YLuQA.png)
 ![Log Out](https://imgur.com/q1Yx3nS.png)
 
+
+## New Hotels
+![Modern Hotel](https://cdn.discordapp.com/attachments/927105489295278080/953426498587615272/unknown.png)
+![Standard Hotel](https://cdn.discordapp.com/attachments/927105489295278080/953426834752700436/unknown.png)
+![Furnitured Midapart](https://cdn.discordapp.com/attachments/927105489295278080/953426633526747196/unknown.png)
 ## Features
 - Door Bell
 - Stash
