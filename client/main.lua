@@ -66,7 +66,7 @@ local function EnterApartment(house, apartmentId, new)
                 CurrentOffset = newoffset
                 TriggerServerEvent("apartments:server:AddObject", apartmentId, house, CurrentOffset)
                 local coords = { x = Apartments.Locations[house].coords.enter.x, y = Apartments.Locations[house].coords.enter.y, z = Apartments.Locations[house].coords.enter.z - CurrentOffset}
-                data = exports['qb-interior']:CreateApartmentFurnished(coords)
+                data = exports['qb-interior']:CreateApartmentFurnished(coords,Apartments.Locations[house].type)
                 Wait(100)
                 houseObj = data[1]
                 POIOffsets = data[2]
