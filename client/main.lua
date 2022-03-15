@@ -394,6 +394,7 @@ local function LeaveApartment(house)
     end)
 
     DeleteInAparmtnetTargets()
+    DeleteApartmentsEntranceTargets()
 end
 
 local function SetClosestApartment()
