@@ -484,7 +484,7 @@ local function ShowExitHeaderMenu()
         }
     }
 
-    exports['qb-menu']:showHeader(headerMenu)
+    exports['qb-menu']:openMenu(headerMenu)
 end
 
 local function ShowEntranceHeaderMenu()
