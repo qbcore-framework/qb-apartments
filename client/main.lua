@@ -423,7 +423,7 @@ function MenuOwners()
             QBCore.Functions.Notify(Lang:t('error.nobody_home'), "error", 3500)
             CloseMenuFull()
         else
-            local vehicleMenu = {
+            local apartmentMenu = {
                 {
                     header = Lang:t('text.tennants'),
                     isMenuHeader = true
