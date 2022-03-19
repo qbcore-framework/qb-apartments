@@ -431,7 +431,7 @@ function MenuOwners()
             }
 
             for k, v in pairs(apartments) do
-                vehicleMenu[#vehicleMenu+1] = {
+                apartmentMenu[#apartmentMenu+1] = {
                     header = v,
                     txt = "",
                     params = {
@@ -444,7 +444,7 @@ function MenuOwners()
                 }
             end
 
-            vehicleMenu[#vehicleMenu+1] = {
+            apartmentMenu[#apartmentMenu+1] = {
                 header = Lang:t('text.close_menu'),
                 txt = "",
                 params = {
@@ -452,7 +452,7 @@ function MenuOwners()
                 }
 
             }
-            exports['qb-menu']:openMenu(vehicleMenu)
+            exports['qb-menu']:openMenu(apartmentMenu)
         end
     end, ClosestHouse)
 end
