@@ -12,9 +12,9 @@ local Translations = {
     },
     text = {
         enter = 'Vstoupit do apartmánu',
-        ring_doorbell = 'Zazvoňte na zvonek',
-        logout = 'Změnit charakter',
-        change_outfit = 'Změnit oblečení',
+        ring_doorbell = 'Zazvonit',
+        logout = 'Odhlásit se z postavy',
+        change_outfit = 'Převléknout se',
         open_stash = 'Otevřít skrýš',
         move_here = 'Přestěhovat se sem',
         open_door = 'Otevřít dveře',
