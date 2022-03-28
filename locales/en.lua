@@ -2,6 +2,7 @@ local Translations = {
     error = {
         to_far_from_door = 'You are to far away from the Doorbell',
         nobody_home = 'There is nobody home..',
+        nobody_at_door = 'There is nobody at the door...'
     },
     success = {
         receive_apart = 'You got a apartment',
@@ -11,6 +12,7 @@ local Translations = {
         at_the_door = 'Someone is at the door!',
     },
     text = {
+        options = '[E] Apartment Options',
         enter = 'Enter Apartment',
         ring_doorbell = 'Ring Doorbell',
         logout = 'Logout Character',
