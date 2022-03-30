@@ -96,6 +96,10 @@ local function RegisterApartmentEntranceZone(apartmentID, apartmentData)
   local boxName = 'apartmentEntrance_' .. apartmentID
   local boxData = apartmentData.polyzoneBoxData
 
+  if  boxData.created then
+      return
+  end
+
   local zone =
     BoxZone:Create(
     coords,
