@@ -57,7 +57,7 @@ Apartments.Locations = {
         name = "apartment4",
         label = "Tinsel Towers",
         coords = {
-            enter = vector4(-621.016, 46.677, 43.591, 179.36),
+            enter = vector4(-619.29, 37.69, 43.59, 181.03),
         },
         polyzoneBoxData = {
             heading = 180,
