@@ -12,8 +12,8 @@ local Translations = {
         at_the_door = '¡Hay alguien en la puerta!',
     },
     text = {
-        options = '[E] Opciones de aprtamento',
-        enter = 'Entrar apartamento',
+        options = '[E] Opciones de apartamento',
+        enter = 'Entrar al apartamento',
         ring_doorbell = 'Tocar timbre',
         logout = 'Salir de personaje',
         change_outfit = 'Cambiar ropa',
