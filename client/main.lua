@@ -263,7 +263,7 @@ local function EnterApartment(house, apartmentId, new)
                 CurrentOffset = newoffset
                 TriggerServerEvent("apartments:server:AddObject", apartmentId, house, CurrentOffset)
                 local coords = { x = Apartments.Locations[house].coords.enter.x, y = Apartments.Locations[house].coords.enter.y, z = Apartments.Locations[house].coords.enter.z - CurrentOffset}
-                data = exports['qb-interior']:CreateApartmentFurnished(coords)
+                local data = exports['qb-interior']:CreateApartmentFurnished(coords)
                 Wait(100)
                 HouseObj = data[1]
                 POIOffsets = data[2]
@@ -287,7 +287,7 @@ local function EnterApartment(house, apartmentId, new)
             TriggerServerEvent("InteractSound_SV:PlayOnSource", "houses_door_open", 0.1)
             TriggerServerEvent("apartments:server:AddObject", apartmentId, house, CurrentOffset)
             local coords = { x = Apartments.Locations[ClosestHouse].coords.enter.x, y = Apartments.Locations[ClosestHouse].coords.enter.y, z = Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset}
-            data = exports['qb-interior']:CreateApartmentFurnished(coords)
+            local data = exports['qb-interior']:CreateApartmentFurnished(coords)
             Wait(100)
             HouseObj = data[1]
             POIOffsets = data[2]
@@ -480,7 +480,7 @@ end)
 RegisterNetEvent('apartments:client:SetHomeBlip', function(home)
     CreateThread(function()
         SetClosestApartment()
-        for name, apartment in pairs(Apartments.Locations) do
+        for name, _ in pairs(Apartments.Locations) do
             RemoveBlip(Apartments.Locations[name].blip)
 
             Apartments.Locations[name].blip = AddBlipForCoord(Apartments.Locations[name].coords.enter.x, Apartments.Locations[name].coords.enter.y, Apartments.Locations[name].coords.enter.z)
@@ -507,7 +507,7 @@ RegisterNetEvent('apartments:client:RingMenu', function(data)
     TriggerServerEvent("apartments:server:RingDoor", data.apartmentId, ClosestHouse)
 end)
 
-RegisterNetEvent('apartments:client:RingDoor', function(player, house)
+RegisterNetEvent('apartments:client:RingDoor', function(player, _)
     CurrentDoorBell = player
     TriggerServerEvent("InteractSound_SV:PlayOnSource", "doorbell", 0.1)
     QBCore.Functions.Notify(Lang:t('info.at_the_door'))
