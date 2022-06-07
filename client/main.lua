@@ -9,6 +9,7 @@ local CurrentOffset = 0
 local HouseObj = {}
 local POIOffsets = nil
 local RangDoorbell = nil
+local IsOutfitOpen = false
 
 -- target variables
 local InApartmentTargets = {}
@@ -71,7 +72,7 @@ local function ShowExitHeaderMenu()
             args = {}
         }
     }
-  
+
     headerMenu[#headerMenu+1] = {
         header = Lang:t('text.leave'),
         params = {
@@ -115,7 +116,7 @@ local function RegisterApartmentEntranceZone(apartmentID, apartmentData)
             CloseMenuFull()
         end
     end)
-    
+
     boxData.created = true
     boxData.zone = zone
 end
@@ -132,7 +133,7 @@ local function RegisterInApartmentZone(targetKey, coords, heading, text)
     Wait(1500)
 
     local boxName = 'inApartmentTarget_' .. targetKey
-    
+
     local zone = BoxZone:Create(coords, 1.5, 1.5, {
         name = boxName,
         heading = heading,
@@ -142,6 +143,9 @@ local function RegisterInApartmentZone(targetKey, coords, heading, text)
     })
 
     zone:onPlayerInOut(function (isPointInside)
+        if IsOutfitOpen then
+            return
+        end
         if isPointInside and text then
             if targetKey == "entrancePos" then
                 ShowExitHeaderMenu()
@@ -193,7 +197,7 @@ local function SetInApartmentTargets()
         -- do nothing
         return
     end
-    
+
     local entrancePos = vector3(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.exit.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.exit.y - 0.5, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.exit.z)
     local stashPos = vector3(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.stash.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.stash.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.stash.z)
     local outfitsPos = vector3(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.clothes.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.clothes.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.clothes.z)
@@ -277,7 +281,7 @@ local function EnterApartment(house, apartmentId, new)
                 TriggerServerEvent('qb-apartments:server:SetInsideMeta', house, apartmentId, true, false)
                 TriggerServerEvent("InteractSound_SV:PlayOnSource", "houses_door_close", 0.1)
                 TriggerServerEvent("QBCore:Server:SetMetaData", "currentapartment", CurrentApartment)
-                
+
             end, house)
         else
             if offset > 230 then
@@ -565,6 +569,13 @@ RegisterNetEvent('apartments:client:Logout', function()
     TriggerServerEvent('qb-houses:server:LogoutLocation')
 end)
 
+RegisterNetEvent('qb-clothing:client:openOutfitMenu', function()
+    IsOutfitOpen = true
+end)
+
+RegisterNetEvent('qb-clothing:client:onMenuClose', function()
+    IsOutfitOpen = false
+end)
 
 -- Threads
 
