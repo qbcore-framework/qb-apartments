@@ -440,14 +440,14 @@ RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
     DeleteInApartmentTargets()
 end)
 
-RegisterNetEvent('apartments:client:setupSpawnUI', function(cData, startingApartments)
+RegisterNetEvent('apartments:client:setupSpawnUI', function(cData, useStartingApartments)
     QBCore.Functions.TriggerCallback('apartments:GetOwnedApartment', function(result)
         if result then
             TriggerEvent('qb-spawn:client:setupSpawns', cData, false, nil)
             TriggerEvent('qb-spawn:client:openUI', true)
             TriggerEvent("apartments:client:SetHomeBlip", result.type)
         else
-            if startingApartments then
+            if useStartingApartments then
                 TriggerEvent('qb-spawn:client:setupSpawns', cData, true, Apartments.Locations)
                 TriggerEvent('qb-spawn:client:openUI', true)
             else
