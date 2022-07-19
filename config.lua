@@ -1,5 +1,4 @@
 Apartments = {}
-Apartments.Starting = true
 Apartments.SpawnOffset = 30
 Apartments.Locations = {
     ["apartment1"] = {
