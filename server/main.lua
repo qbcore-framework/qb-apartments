@@ -131,6 +131,14 @@ RegisterNetEvent('apartments:server:RemoveObject', function(apartmentId, apartme
     end
 end)
 
+RegisterNetEvent('apartments:server:setCurrentApartment', function(ap)
+    local Player = QBCore.Functions.GetPlayer(source)
+
+    if not Player then return end
+
+    Player.Functions.SetMetaData('currentapartment', ap)
+end)
+
 -- Callbacks
 
 QBCore.Functions.CreateCallback('apartments:GetAvailableApartments', function(_, cb, apartment)
@@ -207,15 +215,15 @@ end)
 
 
 QBCore.Functions.CreateCallback('apartments:GetOutfits', function(source, cb)
-	local src = source
-	local Player = QBCore.Functions.GetPlayer(src)
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
 
-	if Player then
+    if Player then
         local result = MySQL.query.await('SELECT * FROM player_outfits WHERE citizenid = ?', { Player.PlayerData.citizenid })
         if result[1] ~= nil then
             cb(result)
         else
             cb(nil)
         end
-	end
+    end
 end)
