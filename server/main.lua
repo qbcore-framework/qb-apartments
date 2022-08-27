@@ -70,8 +70,10 @@ RegisterNetEvent('apartments:server:CreateApartment', function(type, label)
         label,
         Player.PlayerData.citizenid
     })
-    TriggerClientEvent('QBCore:Notify', src, Lang:t('success.receive_apart').." ("..label..")")
-    TriggerClientEvent("apartments:client:SpawnInApartment", src, apartmentId, type)
+    if Apartments.Starting then
+        TriggerClientEvent('QBCore:Notify', src, Lang:t('success.receive_apart').." ("..label..")")
+        TriggerClientEvent("apartments:client:SpawnInApartment", src, apartmentId, type)
+    end
     TriggerClientEvent("apartments:client:SetHomeBlip", src, type)
 end)
 
