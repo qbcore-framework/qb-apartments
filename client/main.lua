@@ -451,6 +451,7 @@ RegisterNetEvent('apartments:client:setupSpawnUI', function(cData)
                 TriggerEvent('qb-spawn:client:setupSpawns', cData, true, Apartments.Locations)
                 TriggerEvent('qb-spawn:client:openUI', true)
             else
+                TriggerServerEvent("apartments:server:CreateApartment", "", "")
                 TriggerEvent('qb-spawn:client:setupSpawns', cData, false, nil)
                 TriggerEvent('qb-spawn:client:openUI', true)
             end
