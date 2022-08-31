@@ -1,6 +1,6 @@
 local ApartmentObjects = {}
 local QBCore = exports['qb-core']:GetCoreObject()
-
+local ox_inventory = nil
 -- Functions
 
 local function CreateApartmentId(type)
@@ -81,6 +81,15 @@ RegisterNetEvent('apartments:server:UpdateApartment', function(type, label)
     MySQL.update('UPDATE apartments SET type = ?, label = ? WHERE citizenid = ?', { type, label, Player.PlayerData.citizenid })
     TriggerClientEvent('QBCore:Notify', src, Lang:t('success.changed_apart'))
     TriggerClientEvent("apartments:client:SetHomeBlip", src, type)
+	--[[
+	-- apparently you cannot override stashs' name in ox_inventory YET, so we comment this block of code for now
+	if ox_inventory then
+		local result = MySQL.query.await('SELECT * FROM apartments WHERE citizenid = ?', { Player.PlayerData.citizenid })
+        if result[1] ~= nil then
+			TriggerEvent('qb-apartments:server:RegisterStash', result[1].name, label) -- rename the stash name in case of apartment change
+        end
+	end
+	]]
 end)
 
 RegisterNetEvent('apartments:server:RingDoor', function(apartmentId, apartment)
@@ -227,3 +236,12 @@ QBCore.Functions.CreateCallback('apartments:GetOutfits', function(source, cb)
         end
     end
 end)
+
+if GetResourceState('ox_inventory') ~= 'missing' then
+	ox_inventory = exports.ox_inventory
+	RegisterNetEvent('qb-apartments:server:RegisterStash', function(currentApartmentId, currentApartmentLabel)
+		-- this line is commented FOR NOW because of the explanation I made clear in line 85
+		--ox_inventory:RegisterStash(currentApartmentId, currentApartmentLabel and 'Stash - '..currentApartmentLabel..' Apartment' or 'Stash', 100, 1000000)
+		ox_inventory:RegisterStash(currentApartmentId, 'Apartment Stash', 100, 1000000)
+	end)
+end
