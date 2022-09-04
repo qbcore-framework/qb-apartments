@@ -444,7 +444,9 @@ RegisterNetEvent('apartments:client:setupSpawnUI', function(cData)
     QBCore.Functions.TriggerCallback('apartments:GetOwnedApartment', function(result)
         if result then
             TriggerEvent('qb-spawn:client:setupSpawns', cData, false, nil)
-            TriggerEvent('qb-spawn:client:openUI', true)
+            if not QB.AutoSpawn then
+                TriggerEvent('qb-spawn:client:openUI', true)
+            end
             TriggerEvent("apartments:client:SetHomeBlip", result.type)
         else
             if Apartments.Starting then
