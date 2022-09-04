@@ -16,6 +16,7 @@ server_scripts {
 }
 
 client_scripts {
+	'@qb-spawn/config.lua',
 	'client/main.lua',
 	'client/gui.lua',
 	'@PolyZone/client.lua',
