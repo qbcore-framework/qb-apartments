@@ -486,17 +486,19 @@ RegisterNetEvent('apartments:client:SetHomeBlip', function(home)
             Apartments.Locations[name].blip = AddBlipForCoord(Apartments.Locations[name].coords.enter.x, Apartments.Locations[name].coords.enter.y, Apartments.Locations[name].coords.enter.z)
             if (name == home) then
                 SetBlipSprite(Apartments.Locations[name].blip, 475)
+				SetBlipCategory(Apartments.Locations[name].blip, 11)
             else
                 SetBlipSprite(Apartments.Locations[name].blip, 476)
+				SetBlipCategory(Apartments.Locations[name].blip, 10)
             end
             SetBlipDisplay(Apartments.Locations[name].blip, 4)
             SetBlipScale(Apartments.Locations[name].blip, 0.65)
             SetBlipAsShortRange(Apartments.Locations[name].blip, true)
             SetBlipColour(Apartments.Locations[name].blip, 3)
 
-            BeginTextCommandSetBlipName("STRING")
-            AddTextComponentSubstringPlayerName(Apartments.Locations[name].label)
-            EndTextCommandSetBlipName(Apartments.Locations[name].blip)
+			AddTextEntry(Apartments.Locations[name].label, Apartments.Locations[name].label)
+			BeginTextCommandSetBlipName(Apartments.Locations[name].label)
+			EndTextCommandSetBlipName(Apartments.Locations[name].blip)
         end
     end)
 end)
