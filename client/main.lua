@@ -58,7 +58,7 @@ local function ShowEntranceHeaderMenu()
         }
     }
 
-    exports['qb-menu']:openMenu(headerMenu)
+    exports['qb-menu']:showHeader(headerMenu)
 end
 
 local function ShowExitHeaderMenu()
