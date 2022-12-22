@@ -2,12 +2,13 @@ fx_version 'cerulean'
 game 'gta5'
 
 description 'QB-Apartments'
-version '2.1.0'
+version '2.2.0'
 
 shared_scripts {
     'config.lua',
     '@qb-core/shared/locale.lua',
-    'locales/en.lua', -- Change to the language you want
+    'locales/en.lua',
+    'locales/*.lua'
 }
 
 server_scripts {
@@ -16,18 +17,18 @@ server_scripts {
 }
 
 client_scripts {
-	'client/main.lua',
-	'client/gui.lua',
-	'@PolyZone/client.lua',
-	'@PolyZone/BoxZone.lua',
-	'@PolyZone/CircleZone.lua',
+    'client/main.lua',
+    'client/gui.lua',
+    '@PolyZone/client.lua',
+    '@PolyZone/BoxZone.lua',
+    '@PolyZone/CircleZone.lua',
 }
 
 dependencies {
-	'qb-core',
-	'qb-interior',
-	'qb-clothing',
-	'qb-weathersync'
+    'qb-core',
+    'qb-interior',
+    'qb-clothing',
+    'qb-weathersync'
 }
 
 lua54 'yes'
