@@ -18,7 +18,6 @@ server_scripts {
 
 client_scripts {
     'client/main.lua',
-    'client/gui.lua',
     '@PolyZone/client.lua',
     '@PolyZone/BoxZone.lua',
     '@PolyZone/CircleZone.lua',
