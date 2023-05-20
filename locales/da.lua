@@ -2,6 +2,7 @@ local Translations = {
     error = {
         to_far_from_door = 'Du er for langt væk fra dørklokken',
         nobody_home = 'Der er ingen hjemme..',
+        nobody_at_door = 'Der er ingen ved døren...'
     },
     success = {
         receive_apart = 'Du modtog en lejlighed',
@@ -16,7 +17,7 @@ local Translations = {
         logout = 'Log Ud',
         change_outfit = 'Outfits',
         open_stash = 'Åben Lager',
-        move_here = 'Flyt Her',
+        move_here = 'Flyt Ind Her',
         open_door = 'Åben Dør',
         leave = 'Forlad Lejlighed',
         close_menu = '⬅ Luk Menu',
