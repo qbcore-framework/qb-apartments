@@ -694,14 +694,14 @@ end)
 -- Threads
 
 CreateThread(function ()
-    local sleep = 500
+    local sleep = 5000
     while not LocalPlayer.state.isLoggedIn do
         -- do nothing
         Wait(sleep)
     end
 
     while true do
-        sleep = 500
+        sleep = 1000
         if not InApartment then
             SetClosestApartment()
             SetApartmentsEntranceTargets()
