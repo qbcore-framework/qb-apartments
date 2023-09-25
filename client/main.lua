@@ -23,7 +23,7 @@ local IsInsideLogoutZone = false
 
 -- polyzone integration
 
-local function RegisterInApartmentTarget(targetKey, coords, heading, options)
+local function RegisterInApartmentTarget(targetKey, coords, heading)
     if not InApartment then
         return
     end
