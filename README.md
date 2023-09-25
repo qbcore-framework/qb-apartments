@@ -22,6 +22,7 @@ Apartments System for QB-Core Framework :office:
 
 ## Dependencies
 - [qb-core](https://github.com/qbcore-framework/qb-core)
+- [qb-target](https://github.com/qbcore-framework/qb-target) - To interact with target
 - [qb-clothing](https://github.com/qbcore-framework/qb-clothing) - To save outfits
 - [qb-houses](https://github.com/qbcore-framework/qb-houses) - House logic
 - [qb-interior](https://github.com/qbcore-framework/qb-interior) - Interior logic

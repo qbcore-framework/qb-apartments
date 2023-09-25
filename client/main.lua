@@ -14,12 +14,37 @@ local RangDoorbell = nil
 local InApartmentTargets = {}
 
 -- polyzone variables
+local IsInsideEntranceZone = false
+local IsInsideExitZone = false
 local IsInsideStashZone = false
 local IsInsideOutfitsZone = false
 local IsInsideLogoutZone = false
 
 
 -- polyzone integration
+
+local function RegisterInApartmentTarget(targetKey, coords, heading, options)
+    if not InApartment then
+        return
+    end
+
+    if InApartmentTargets[targetKey] and InApartmentTargets[targetKey].created then
+        return
+    end
+
+    local boxName = 'inApartmentTarget_' .. targetKey
+    exports['qb-target']:AddBoxZone(boxName, coords, 1, 1, {
+        name = boxName,
+        heading = heading,
+        debugPoly = false,
+    }, {
+        options = options,
+        distance = 1
+    })
+
+    InApartmentTargets[targetKey] = InApartmentTargets[targetKey] or {}
+    InApartmentTargets[targetKey].created = true
+end
 
 local function ShowEntranceHeaderMenu()
     local headerMenu = {}
@@ -96,7 +121,7 @@ local function RegisterApartmentEntranceZone(apartmentID, apartmentData)
     local boxName = 'apartmentEntrance_' .. apartmentID
     local boxData = apartmentData.polyzoneBoxData
 
-    if boxData.created then
+    if boxData.created or Apartments.UseTarget then
         return
     end
 
@@ -118,6 +143,56 @@ local function RegisterApartmentEntranceZone(apartmentID, apartmentData)
 
     boxData.created = true
     boxData.zone = zone
+end
+
+local function RegisterApartmentEntranceTarget(apartmentID, apartmentData)
+    local coords = apartmentData.coords['enter']
+    local boxName = 'apartmentEntrance_' .. apartmentID
+    local boxData = apartmentData.polyzoneBoxData
+
+    if boxData.created or not Apartments.UseTarget then
+        return
+    end
+
+    local options = {}
+    if apartmentID == ClosestHouse and IsOwned then
+        options = {
+            {
+                type = "client",
+                event = "apartments:client:EnterApartment",
+                icon = "fas fa-door-open",
+                label = Lang:t("text.enter"),
+            },
+        }
+    else
+        options = {
+            {
+                type = "client",
+                event = "apartments:client:UpdateApartment",
+                icon = "fas fa-hotel",
+                label = Lang:t("text.move_here"),
+            }
+        }
+    end
+    options[#options+1] = {
+        type = "client",
+        event = "apartments:client:DoorbellMenu",
+        icon = "fas fa-concierge-bell",
+        label = Lang:t('text.ring_doorbell'),
+    }
+
+    exports['qb-target']:AddBoxZone(boxName, coords, boxData.length, boxData.width, {
+        name = boxName,
+        heading = boxData.heading,
+        debugPoly = boxData.debug,
+        minZ = boxData.minZ,
+        maxZ = boxData.maxZ,
+    }, {
+        options = options,
+        distance = boxData.distance
+    })
+
+    boxData.created = true
 end
 
 local function RegisterInApartmentZone(targetKey, coords, heading, text)
@@ -182,7 +257,11 @@ local function SetApartmentsEntranceTargets()
     if Apartments.Locations and next(Apartments.Locations) then
         for id, apartment in pairs(Apartments.Locations) do
             if apartment and apartment.coords and apartment.coords['enter'] then
-                RegisterApartmentEntranceZone(id, apartment)
+                if Apartments.UseTarget then
+                    RegisterApartmentEntranceTarget(id, apartment)
+                else
+                    RegisterApartmentEntranceZone(id, apartment)
+                end
             end
         end
     end
@@ -194,15 +273,56 @@ local function SetInApartmentTargets()
         return
     end
 
-    local entrancePos = vector3(Apartments.Locations[ClosestHouse].coords.enter.x + POIOffsets.exit.x, Apartments.Locations[ClosestHouse].coords.enter.y + POIOffsets.exit.y - 0.5, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.exit.z)
-    local stashPos = vector3(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.stash.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.stash.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.stash.z)
-    local outfitsPos = vector3(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.clothes.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.clothes.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.clothes.z)
-    local logoutPos = vector3(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.logout.x, Apartments.Locations[ClosestHouse].coords.enter.y + POIOffsets.logout.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.logout.z)
+    local entrancePos  = vector3(Apartments.Locations[ClosestHouse].coords.enter.x + POIOffsets.exit.x,    Apartments.Locations[ClosestHouse].coords.enter.y + POIOffsets.exit.y - 0.5,  Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.exit.z)
+    local stashPos     = vector3(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.stash.x,   Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.stash.y,       Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.stash.z)
+    local outfitsPos   = vector3(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.clothes.x, Apartments.Locations[ClosestHouse].coords.enter.y - POIOffsets.clothes.y,     Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.clothes.z)
+    local logoutPos    = vector3(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.logout.x,  Apartments.Locations[ClosestHouse].coords.enter.y + POIOffsets.logout.y,      Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.logout.z)
 
-    RegisterInApartmentZone('stashPos', stashPos, 0, "[E] " .. Lang:t('text.open_stash'))
-    RegisterInApartmentZone('outfitsPos', outfitsPos, 0, "[E] " .. Lang:t('text.change_outfit'))
-    RegisterInApartmentZone('logoutPos', logoutPos, 0, "[E] " .. Lang:t('text.logout'))
-    RegisterInApartmentZone('entrancePos', entrancePos, 0, Lang:t('text.options'))
+    if Apartments.UseTarget then
+        RegisterInApartmentTarget('entrancePos', entrancePos, 0, {
+            {
+                type = "client",
+                event = "apartments:client:OpenDoor",
+                icon = "fas fa-door-open",
+                label = Lang:t('text.open_door'),
+            },
+            {
+                type = "client",
+                event = "apartments:client:LeaveApartment",
+                icon = "fas fa-door-open",
+                label = Lang:t('text.leave'),
+            },
+        })
+        RegisterInApartmentTarget('stashPos', stashPos, 0, {
+            {
+                type = "client",
+                event = "apartments:client:OpenStash",
+                icon = "fas fa-box-open",
+                label = Lang:t('text.open_stash'),
+            },
+        })
+        RegisterInApartmentTarget('outfitsPos', outfitsPos, 0, {
+            {
+                type = "client",
+                event = "apartments:client:ChangeOutfit",
+                icon = "fas fa-tshirt",
+                label = Lang:t('text.change_outfit'),
+            },
+        })
+        RegisterInApartmentTarget('logoutPos', logoutPos, 0, {
+            {
+                type = "client",
+                event = "apartments:client:Logout",
+                icon = "fas fa-sign-out-alt",
+                label = Lang:t('text.logout'),
+            },
+        })
+    else
+        RegisterInApartmentZone('entrancePos', entrancePos, 0, Lang:t('text.options'))
+        RegisterInApartmentZone('stashPos', stashPos, 0, "[E] " .. Lang:t('text.open_stash'))
+        RegisterInApartmentZone('outfitsPos', outfitsPos, 0, "[E] " .. Lang:t('text.change_outfit'))
+        RegisterInApartmentZone('logoutPos', logoutPos, 0, "[E] " .. Lang:t('text.logout'))
+    end
 end
 
 local function DeleteApartmentsEntranceTargets()
@@ -218,15 +338,20 @@ local function DeleteApartmentsEntranceTargets()
 end
 
 local function DeleteInApartmentTargets()
+    IsInsideExitZone = false
     IsInsideStashZone = false
     IsInsideOutfitsZone = false
     IsInsideLogoutZone = false
 
     if InApartmentTargets and next(InApartmentTargets) then
-        for _, apartmentTarget in pairs(InApartmentTargets) do
-            if apartmentTarget.zone then
-                apartmentTarget.zone:destroy()
-                apartmentTarget.zone = nil
+        for id, apartmentTarget in pairs(InApartmentTargets) do
+            if Apartments.UseTarget then
+                exports['qb-target']:RemoveZone('inApartmentTarget_' .. id)
+            else
+                if apartmentTarget.zone then
+                    apartmentTarget.zone:destroy()
+                    apartmentTarget.zone = nil
+                end
             end
         end
     end
@@ -569,24 +694,44 @@ end)
 -- Threads
 
 CreateThread(function ()
-    local sleep = 5000
+    local sleep = 500
     while not LocalPlayer.state.isLoggedIn do
         -- do nothing
         Wait(sleep)
     end
 
     while true do
-        sleep = 1000
-
+        sleep = 500
         if not InApartment then
             SetClosestApartment()
             SetApartmentsEntranceTargets()
-        elseif InApartment then
-            sleep = 0
+        end
 
+        if InApartment then
             SetInApartmentTargets()
+        end
+
+        if not Apartments.UseTarget and not InApartment then
+            if IsInsideEntranceZone then
+                sleep = 0
+                if IsControlJustPressed(0, 38) then
+                    ShowEntranceHeaderMenu()
+                    exports['qb-core']:HideText()
+                end
+            end
+        end
+
+        if not Apartments.UseTarget and InApartment then
+            if IsInsideExitZone then
+                sleep = 0
+                if IsControlJustPressed(0, 38) then
+                    ShowExitHeaderMenu()
+                    exports['qb-core']:HideText()
+                end
+            end
 
             if IsInsideStashZone then
+                sleep = 0
                 if IsControlJustPressed(0, 38) then
                     TriggerEvent('apartments:client:OpenStash')
                     exports['qb-core']:HideText()
@@ -594,6 +739,7 @@ CreateThread(function ()
             end
 
             if IsInsideOutfitsZone then
+                sleep = 0
                 if IsControlJustPressed(0, 38) then
                     TriggerEvent('apartments:client:ChangeOutfit')
                     exports['qb-core']:HideText()
@@ -601,13 +747,13 @@ CreateThread(function ()
             end
 
             if IsInsideLogoutZone then
+                sleep = 0
                 if IsControlJustPressed(0, 38) then
                     TriggerEvent('apartments:client:Logout')
                     exports['qb-core']:HideText()
                 end
             end
         end
-
         Wait(sleep)
     end
 end)
