@@ -1,6 +1,6 @@
 local Translations = {
     error = {
-        to_far_from_door = 'Você está muito longe da campainha',
+        to_far_from_door = 'Você está muito longe do interfone',
         nobody_home = 'Não há ninguém em casa..',
         nobody_at_door = 'Não há ninguém na porta...'
     },
@@ -25,7 +25,6 @@ local Translations = {
         tennants = 'Inquilinos',
     },
 }
-
 
 if GetConvar('qb_locale', 'en') == 'pt-br' then
     Lang = Locale:new({
