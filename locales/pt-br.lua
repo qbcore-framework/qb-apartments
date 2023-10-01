@@ -5,18 +5,18 @@ local Translations = {
         nobody_at_door = 'Não há ninguém na porta...'
     },
     success = {
-        receive_apart = 'Você conseguiu um apartamento',
+        receive_apart = 'Você recebeu um apartamento',
         changed_apart = 'Você mudou de apartamento',
     },
     info = {
         at_the_door = 'Alguém está na porta!',
     },
     text = {
-        options = '[E] Opções de Apartamento',
+        options = '[E] Opções do Apartamento',
         enter = 'Entrar no Apartamento',
-        ring_doorbell = 'Tocar Interfone',
+        ring_doorbell = 'Tocar a Campainha',
         logout = 'Sair do Personagem',
-        change_outfit = 'Trocar Visual',
+        change_outfit = 'Trocar de Roupa',
         open_stash = 'Abrir Esconderijo',
         move_here = 'Mover para Cá',
         open_door = 'Abrir Porta',
@@ -26,7 +26,10 @@ local Translations = {
     },
 }
 
-Lang = Lang or Locale:new({
-    phrases = Translations,
-    warnOnMissing = true
-})
+if GetConvar('qb_locale', 'en') == 'pt-br' then
+    Lang = Locale:new({
+        phrases = Translations,
+        warnOnMissing = true,
+        fallbackLang = Lang,
+    })
+end
