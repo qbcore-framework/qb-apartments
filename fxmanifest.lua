@@ -1,7 +1,8 @@
 fx_version 'cerulean'
 game 'gta5'
-
-description 'QB-Apartments'
+lua54 'yes'
+author 'Kakarot'
+description 'Provides players with an apartment on server join'
 version '2.2.1'
 
 shared_scripts {
@@ -29,5 +30,3 @@ dependencies {
     'qb-clothing',
     'qb-weathersync',
 }
-
-lua54 'yes'
