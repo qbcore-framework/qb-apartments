@@ -680,10 +680,9 @@ RegisterNetEvent('apartments:client:LeaveApartment', function()
 end)
 
 RegisterNetEvent('apartments:client:OpenStash', function()
-    if CurrentApartment ~= nil then
-        TriggerServerEvent('inventory:server:OpenInventory', 'stash', CurrentApartment)
+    if CurrentApartment then
         TriggerServerEvent('InteractSound_SV:PlayOnSource', 'StashOpen', 0.4)
-        TriggerEvent('inventory:client:SetCurrentStash', CurrentApartment)
+        TriggerServerEvent('apartments:server:openStash', CurrentApartment)
     end
 end)
 

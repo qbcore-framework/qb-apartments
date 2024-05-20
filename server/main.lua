@@ -5,16 +5,16 @@ local QBCore = exports['qb-core']:GetCoreObject()
 
 local function CreateApartmentId(type)
     local UniqueFound = false
-	local AparmentId = nil
+    local AparmentId = nil
 
-	while not UniqueFound do
-		AparmentId = tostring(math.random(1, 9999))
+    while not UniqueFound do
+        AparmentId = tostring(math.random(1, 9999))
         local result = MySQL.query.await('SELECT COUNT(*) as count FROM apartments WHERE name = ?', { tostring(type .. AparmentId) })
         if result[1].count == 0 then
             UniqueFound = true
         end
-	end
-	return AparmentId
+    end
+    return AparmentId
 end
 
 local function GetApartmentInfo(apartmentId)
@@ -31,15 +31,15 @@ end
 RegisterNetEvent('qb-apartments:server:SetInsideMeta', function(house, insideId, bool, isVisiting)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local insideMeta = Player.PlayerData.metadata["inside"]
+    local insideMeta = Player.PlayerData.metadata['inside']
 
     if bool then
-        local routeId = insideId:gsub("[^%-%d]", "")
+        local routeId = insideId:gsub('[^%-%d]', '')
         if not isVisiting then
             insideMeta.apartment.apartmentType = house
             insideMeta.apartment.apartmentId = insideId
             insideMeta.house = nil
-            Player.Functions.SetMetaData("inside", insideMeta)
+            Player.Functions.SetMetaData('inside', insideMeta)
         end
         QBCore.Functions.SetPlayerBucket(src, tonumber(routeId))
     else
@@ -48,7 +48,7 @@ RegisterNetEvent('qb-apartments:server:SetInsideMeta', function(house, insideId,
         insideMeta.house = nil
 
 
-        Player.Functions.SetMetaData("inside", insideMeta)
+        Player.Functions.SetMetaData('inside', insideMeta)
         QBCore.Functions.SetPlayerBucket(src, 0)
     end
 end)
@@ -58,21 +58,26 @@ RegisterNetEvent('qb-apartments:returnBucket', function()
     SetPlayerRoutingBucket(src, 0)
 end)
 
+RegisterNetEvent('apartments:server:openStash', function(CurrentApartment)
+    local src = source
+    exports['qb-inventory']:OpenInventory(src, CurrentApartment)
+end)
+
 RegisterNetEvent('apartments:server:CreateApartment', function(type, label)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local num = CreateApartmentId(type)
     local apartmentId = tostring(type .. num)
-    label = tostring(label .. " " .. num)
+    label = tostring(label .. ' ' .. num)
     MySQL.insert('INSERT INTO apartments (name, type, label, citizenid) VALUES (?, ?, ?, ?)', {
         apartmentId,
         type,
         label,
         Player.PlayerData.citizenid
     })
-    TriggerClientEvent('QBCore:Notify', src, Lang:t('success.receive_apart').." ("..label..")")
-    TriggerClientEvent("apartments:client:SpawnInApartment", src, apartmentId, type)
-    TriggerClientEvent("apartments:client:SetHomeBlip", src, type)
+    TriggerClientEvent('QBCore:Notify', src, Lang:t('success.receive_apart') .. ' (' .. label .. ')')
+    TriggerClientEvent('apartments:client:SpawnInApartment', src, apartmentId, type)
+    TriggerClientEvent('apartments:client:SetHomeBlip', src, type)
 end)
 
 RegisterNetEvent('apartments:server:UpdateApartment', function(type, label)
@@ -80,7 +85,7 @@ RegisterNetEvent('apartments:server:UpdateApartment', function(type, label)
     local Player = QBCore.Functions.GetPlayer(src)
     MySQL.update('UPDATE apartments SET type = ?, label = ? WHERE citizenid = ?', { type, label, Player.PlayerData.citizenid })
     TriggerClientEvent('QBCore:Notify', src, Lang:t('success.changed_apart'))
-    TriggerClientEvent("apartments:client:SetHomeBlip", src, type)
+    TriggerClientEvent('apartments:client:SetHomeBlip', src, type)
 end)
 
 RegisterNetEvent('apartments:server:RingDoor', function(apartmentId, apartment)
@@ -197,7 +202,7 @@ QBCore.Functions.CreateCallback('apartments:GetOwnedApartment', function(source,
 end)
 
 QBCore.Functions.CreateCallback('apartments:IsOwner', function(source, cb, apartment)
-	local src = source
+    local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     if Player ~= nil then
         local result = MySQL.query.await('SELECT * FROM apartments WHERE citizenid = ?', { Player.PlayerData.citizenid })
