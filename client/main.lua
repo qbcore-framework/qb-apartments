@@ -583,6 +583,7 @@ RegisterNetEvent('apartments:client:setupSpawnUI', function(cData)
             else
                 TriggerEvent('qb-spawn:client:setupSpawns', cData, false, nil)
                 TriggerEvent('qb-spawn:client:openUI', true)
+                TriggerEvent('apartments:client:SetHomeBlip', nil)
             end
         end
     end, cData.citizenid)
