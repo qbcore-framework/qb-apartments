@@ -63,7 +63,7 @@ RegisterNetEvent('apartments:server:openStash', function(CurrentApartment)
     exports['qb-inventory']:OpenInventory(src, CurrentApartment)
 end)
 
-RegisterNetEvent('apartments:server:CreateApartment', function(type, label)
+RegisterNetEvent('apartments:server:CreateApartment', function(type, label, firstSpawn)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
     local num = CreateApartmentId(type)
@@ -76,7 +76,9 @@ RegisterNetEvent('apartments:server:CreateApartment', function(type, label)
         Player.PlayerData.citizenid
     })
     TriggerClientEvent('QBCore:Notify', src, Lang:t('success.receive_apart') .. ' (' .. label .. ')')
-    TriggerClientEvent('apartments:client:SpawnInApartment', src, apartmentId, type)
+    if firstSpawn then
+        TriggerClientEvent('apartments:client:SpawnInApartment', src, apartmentId, type)
+    end
     TriggerClientEvent('apartments:client:SetHomeBlip', src, type)
 end)
 
