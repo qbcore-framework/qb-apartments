@@ -583,6 +583,7 @@ RegisterNetEvent('apartments:client:setupSpawnUI', function(cData)
             else
                 TriggerEvent('qb-spawn:client:setupSpawns', cData, false, nil)
                 TriggerEvent('qb-spawn:client:openUI', true)
+                TriggerEvent('apartments:client:SetHomeBlip', nil)
             end
         end
     end, cData.citizenid)
@@ -659,7 +660,14 @@ end)
 RegisterNetEvent('apartments:client:UpdateApartment', function()
     local apartmentType = ClosestHouse
     local apartmentLabel = Apartments.Locations[ClosestHouse].label
-    TriggerServerEvent('apartments:server:UpdateApartment', apartmentType, apartmentLabel)
+    QBCore.Functions.TriggerCallback('apartments:GetOwnedApartment', function(result)
+        if result == nil then
+            TriggerServerEvent("apartments:server:CreateApartment", apartmentType, apartmentLabel, false)
+        else
+            TriggerServerEvent('apartments:server:UpdateApartment', apartmentType, apartmentLabel)
+        end
+    end)
+
     IsOwned = true
 
     DeleteApartmentsEntranceTargets()
