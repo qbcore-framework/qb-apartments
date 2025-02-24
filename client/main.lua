@@ -20,6 +20,12 @@ local IsInsideStashZone = false
 local IsInsideOutfitsZone = false
 local IsInsideLogoutZone = false
 
+-- ox_inventory compatibility
+local ox_inventory = nil
+if GetResourceState('ox_inventory') ~= 'missing' then
+    ox_inventory = exports.ox_inventory
+end 
+
 -- polyzone integration
 
 local function OpenEntranceMenu()
@@ -162,16 +168,18 @@ local function RegisterApartmentEntranceTarget(apartmentID, apartmentData)
         label = Lang:t('text.ring_doorbell'),
     }
 
-    exports['qb-target']:AddBoxZone(boxName, coords, boxData.length, boxData.width, {
-        name = boxName,
-        heading = boxData.heading,
-        debugPoly = boxData.debug,
-        minZ = boxData.minZ,
-        maxZ = boxData.maxZ,
-    }, {
-        options = options,
-        distance = boxData.distance
+    exports['ox_target']:addBoxZone({
+        coords = coords, -- Posições x, y, z
+        size = vec3(boxData.length, boxData.width, boxData.maxZ - boxData.minZ), -- Tamanho da caixa
+        rotation = boxData.heading, -- Direção
+        debug = boxData.debug, -- Para mostrar a caixa no mapa para debug (opcional)
+        minZ = boxData.minZ, -- Z mínimo
+        maxZ = boxData.maxZ, -- Z máximo
+        options = options, -- Opções de interação
+        distance = boxData.distance, -- Distância de interação
+        name = boxName -- Nome da zona
     })
+    
 
     boxData.created = true
 end
@@ -230,29 +238,39 @@ end
 
 -- interior interactable points (target)
 
-local function RegisterInApartmentTarget(targetKey, coords, heading, options)
-    if not InApartment then
-        return
+-- First, ensure we're properly storing targets when creating them
+local function RegisterInApartmentTarget(id, coords, heading, options)
+    if UseTarget then
+        local targetId = 'inApartmentTarget_' .. id
+        InApartmentTargets[id] = {
+            id = targetId,
+            type = 'target'
+        }
+        exports['ox_target']:addBoxZone(targetId, coords, 1.5, 1.5, {
+            name = targetId,
+            heading = heading,
+            debugPoly = false,
+            minZ = coords.z - 1.0,
+            maxZ = coords.z + 1.0
+        }, options)
+    else
+        -- For non-target version
+        InApartmentTargets[id] = {
+            type = 'zone',
+            zone = lib.zones.box({
+                coords = coords,
+                size = vec3(2, 2, 2),
+                rotation = heading,
+                debug = false,
+                onEnter = function()
+                    -- Your zone enter logic
+                end,
+                onExit = function()
+                    -- Your zone exit logic
+                end
+            })
+        }
     end
-
-    if InApartmentTargets[targetKey] and InApartmentTargets[targetKey].created then
-        return
-    end
-
-    local boxName = 'inApartmentTarget_' .. targetKey
-    exports['qb-target']:AddBoxZone(boxName, coords, 1.5, 1.5, {
-        name = boxName,
-        heading = heading,
-        minZ = coords.z - 1.0,
-        maxZ = coords.z + 5.0,
-        debugPoly = false,
-    }, {
-        options = options,
-        distance = 1
-    })
-
-    InApartmentTargets[targetKey] = InApartmentTargets[targetKey] or {}
-    InApartmentTargets[targetKey].created = true
 end
 
 -- shared
@@ -271,9 +289,20 @@ local function SetApartmentsEntranceTargets()
     end
 end
 
+local InApartmentTargets = {} -- Make sure this is declared at the file scope (outside any function)
+
 local function SetInApartmentTargets()
+    -- If we're not in an apartment, don't do anything
+    if not InApartment then
+        return
+    end
+    
     if not POIOffsets then
-        -- do nothing
+        return
+    end
+
+    -- If we already have targets set up, don't create them again
+    if InApartmentTargets and next(InApartmentTargets) then
         return
     end
 
@@ -283,57 +312,115 @@ local function SetInApartmentTargets()
     local logoutPos = vector3(Apartments.Locations[ClosestHouse].coords.enter.x - POIOffsets.logout.x, Apartments.Locations[ClosestHouse].coords.enter.y + POIOffsets.logout.y, Apartments.Locations[ClosestHouse].coords.enter.z - CurrentOffset + POIOffsets.logout.z)
 
     if UseTarget then
-        RegisterInApartmentTarget('entrancePos', entrancePos, 0, {
-            {
-                type = 'client',
-                event = 'apartments:client:OpenDoor',
-                icon = 'fas fa-door-open',
-                label = Lang:t('text.open_door'),
-            },
-            {
-                type = 'client',
-                event = 'apartments:client:LeaveApartment',
-                icon = 'fas fa-door-open',
-                label = Lang:t('text.leave'),
-            },
+        -- Store the target reference when creating it
+        InApartmentTargets['entrancePos'] = exports['ox_target']:addBoxZone({
+            coords = entrancePos,
+            size = vec3(1.5, 1.5, 1.5),
+            rotation = 0,
+            debug = false,
+            options = {
+                {
+                    type = 'client',
+                    event = 'apartments:client:OpenDoor',
+                    icon = 'fas fa-door-open',
+                    label = Lang:t('text.open_door'),
+                },
+                {
+                    type = 'client',
+                    event = 'apartments:client:LeaveApartment',
+                    icon = 'fas fa-door-open',
+                    label = Lang:t('text.leave'),
+                },
+            }
         })
-        RegisterInApartmentTarget('stashPos', stashPos, 0, {
-            {
-                type = 'client',
-                event = 'apartments:client:OpenStash',
-                icon = 'fas fa-box-open',
-                label = Lang:t('text.open_stash'),
-            },
+
+        InApartmentTargets['stashPos'] = exports['ox_target']:addBoxZone({
+            coords = stashPos,
+            size = vec3(1.5, 1.5, 1.5),
+            rotation = 0,
+            debug = false,
+            options = {
+                {
+                    type = 'client',
+                    event = 'apartments:client:OpenStash',
+                    icon = 'fas fa-box-open',
+                    label = Lang:t('text.open_stash'),
+                }
+            }
         })
-        RegisterInApartmentTarget('outfitsPos', outfitsPos, 0, {
-            {
-                type = 'client',
-                event = 'apartments:client:ChangeOutfit',
-                icon = 'fas fa-tshirt',
-                label = Lang:t('text.change_outfit'),
-            },
+
+        InApartmentTargets['outfitsPos'] = exports['ox_target']:addBoxZone({
+            coords = outfitsPos,
+            size = vec3(1.5, 1.5, 1.5),
+            rotation = 0,
+            debug = false,
+            options = {
+                {
+                    type = 'client',
+                    event = 'apartments:client:ChangeOutfit',
+                    icon = 'fas fa-tshirt',
+                    label = Lang:t('text.change_outfit'),
+                }
+            }
         })
-        RegisterInApartmentTarget('logoutPos', logoutPos, 0, {
-            {
-                type = 'client',
-                event = 'apartments:client:Logout',
-                icon = 'fas fa-sign-out-alt',
-                label = Lang:t('text.logout'),
-            },
+
+        InApartmentTargets['logoutPos'] = exports['ox_target']:addBoxZone({
+            coords = logoutPos,
+            size = vec3(1.5, 1.5, 1.5),
+            rotation = 0,
+            debug = false,
+            options = {
+                {
+                    type = 'client',
+                    event = 'apartments:client:Logout',
+                    icon = 'fas fa-sign-out-alt',
+                    label = Lang:t('text.logout'),
+                }
+            }
         })
     else
-        RegisterInApartmentZone('stashPos', stashPos, 0, '[E] ' .. Lang:t('text.open_stash'))
-        RegisterInApartmentZone('outfitsPos', outfitsPos, 0, '[E] ' .. Lang:t('text.change_outfit'))
-        RegisterInApartmentZone('logoutPos', logoutPos, 0, '[E] ' .. Lang:t('text.logout'))
-        RegisterInApartmentZone('entrancePos', entrancePos, 0, Lang:t('text.options'))
+        -- For non-target version
+        InApartmentTargets['stashPos'] = lib.zones.box({
+            coords = stashPos,
+            size = vec3(2, 2, 2),
+            rotation = 0,
+            debug = false,
+            text = '[E] ' .. Lang:t('text.open_stash')
+        })
+
+        InApartmentTargets['outfitsPos'] = lib.zones.box({
+            coords = outfitsPos,
+            size = vec3(2, 2, 2),
+            rotation = 0,
+            debug = false,
+            text = '[E] ' .. Lang:t('text.change_outfit')
+        })
+
+        InApartmentTargets['logoutPos'] = lib.zones.box({
+            coords = logoutPos,
+            size = vec3(2, 2, 2),
+            rotation = 0,
+            debug = false,
+            text = '[E] ' .. Lang:t('text.logout')
+        })
+
+        InApartmentTargets['entrancePos'] = lib.zones.box({
+            coords = entrancePos,
+            size = vec3(2, 2, 2),
+            rotation = 0,
+            debug = false,
+            text = Lang:t('text.options')
+        })
     end
 end
+
+
 
 local function DeleteApartmentsEntranceTargets()
     if Apartments.Locations and next(Apartments.Locations) then
         for id, apartment in pairs(Apartments.Locations) do
             if UseTarget then
-                exports['qb-target']:RemoveZone('apartmentEntrance_' .. id)
+                exports['ox_target']:removeZone('apartmentEntrance_' .. id)
             else
                 if apartment.polyzoneBoxData.zone then
                     apartment.polyzoneBoxData.zone:destroy()
@@ -352,19 +439,17 @@ local function DeleteInApartmentTargets()
     IsInsideLogoutZone = false
 
     if InApartmentTargets and next(InApartmentTargets) then
-        for id, apartmentTarget in pairs(InApartmentTargets) do
+        for id, target in pairs(InApartmentTargets) do
             if UseTarget then
-                exports['qb-target']:RemoveZone('inApartmentTarget_' .. id)
+                exports['ox_target']:removeZone(target) -- Remove the target using the stored reference
             else
-                if apartmentTarget.zone then
-                    apartmentTarget.zone:destroy()
-                    apartmentTarget.zone = nil
-                end
+                target:remove() -- Remove the zone
             end
         end
     end
-    InApartmentTargets = {}
+    InApartmentTargets = {} -- Clear the table
 end
+
 
 -- utility functions
 
@@ -404,7 +489,7 @@ local function EnterApartment(house, apartmentId, new)
                 ClosestHouse = house
                 RangDoorbell = nil
                 Wait(500)
-                TriggerEvent('qb-weathersync:client:DisableSync')
+                TriggerEvent('qb-weathersync:client:EnableSync')
                 Wait(100)
                 TriggerServerEvent('qb-apartments:server:SetInsideMeta', house, apartmentId, true, false)
                 TriggerServerEvent('InteractSound_SV:PlayOnSource', 'houses_door_close', 0.1)
@@ -484,10 +569,11 @@ local function SetClosestApartment()
         QBCore.Functions.TriggerCallback('apartments:IsOwner', function(result)
             IsOwned = result
             DeleteApartmentsEntranceTargets()
-            DeleteInApartmentTargets()
+            -- Remove this line: DeleteInApartmentTargets()
         end, ClosestHouse)
     end
 end
+
 
 function MenuOwners()
     QBCore.Functions.TriggerCallback('apartments:GetAvailableApartments', function(apartments)
@@ -688,9 +774,17 @@ RegisterNetEvent('apartments:client:LeaveApartment', function()
 end)
 
 RegisterNetEvent('apartments:client:OpenStash', function()
-    if CurrentApartment then
-        TriggerServerEvent('InteractSound_SV:PlayOnSource', 'StashOpen', 0.4)
-        TriggerServerEvent('apartments:server:openStash', CurrentApartment)
+    if CurrentApartment ~= nil then
+        TriggerServerEvent("InteractSound_SV:PlayOnSource", "StashOpen", 0.4)
+        if not ox_inventory then
+            TriggerServerEvent("inventory:server:OpenInventory", "stash", CurrentApartment)
+            TriggerEvent("inventory:client:SetCurrentStash", CurrentApartment)
+        else
+            if not ox_inventory:openInventory('stash', CurrentApartment) then
+                TriggerServerEvent('qb-apartments:server:RegisterStash', CurrentApartment, Apartments.Locations[ClosestHouse].label)
+                ox_inventory:openInventory('stash', CurrentApartment)
+            end
+        end
     end
 end)
 
@@ -700,7 +794,7 @@ RegisterNetEvent('apartments:client:ChangeOutfit', function()
 end)
 
 RegisterNetEvent('apartments:client:Logout', function()
-    TriggerServerEvent('qb-houses:server:LogoutLocation')
+    TriggerServerEvent('vms_multichars:relog')
 end)
 
 
