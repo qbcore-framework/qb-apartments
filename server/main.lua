@@ -8,7 +8,7 @@ local function CreateApartmentId(type)
     local AparmentId = nil
 
     while not UniqueFound do
-        AparmentId = tostring(math.random(1, 9999))
+        AparmentId = tostring(math.random(1, 1000000))
         local result = MySQL.query.await('SELECT COUNT(*) as count FROM apartments WHERE name = ?', { tostring(type .. AparmentId) })
         if result[1].count == 0 then
             UniqueFound = true
