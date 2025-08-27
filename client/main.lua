@@ -135,7 +135,7 @@ local function RegisterApartmentEntranceTarget(apartmentID, apartmentData)
         return
     end
 
-    local MenuOptions = {}
+    local MenuOptions
     if apartmentID == ClosestHouse and IsOwned then
         MenuOptions = {
             {
