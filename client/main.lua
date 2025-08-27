@@ -135,9 +135,9 @@ local function RegisterApartmentEntranceTarget(apartmentID, apartmentData)
         return
     end
 
-    local options = {}
+    local MenuOptions = {}
     if apartmentID == ClosestHouse and IsOwned then
-        options = {
+        MenuOptions = {
             {
                 type = 'client',
                 event = 'apartments:client:EnterApartment',
@@ -146,7 +146,7 @@ local function RegisterApartmentEntranceTarget(apartmentID, apartmentData)
             },
         }
     else
-        options = {
+        MenuOptions = {
             {
                 type = 'client',
                 event = 'apartments:client:UpdateApartment',
@@ -155,7 +155,7 @@ local function RegisterApartmentEntranceTarget(apartmentID, apartmentData)
             }
         }
     end
-    options[#options + 1] = {
+    MenuOptions[#MenuOptions + 1] = {
         type = 'client',
         event = 'apartments:client:DoorbellMenu',
         icon = 'fas fa-concierge-bell',
@@ -169,7 +169,7 @@ local function RegisterApartmentEntranceTarget(apartmentID, apartmentData)
         minZ = boxData.minZ,
         maxZ = boxData.maxZ,
     }, {
-        options = options,
+        options = MenuOptions,
         distance = boxData.distance
     })
 
