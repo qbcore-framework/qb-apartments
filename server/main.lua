@@ -60,6 +60,19 @@ end)
 
 RegisterNetEvent('apartments:server:openStash', function(CurrentApartment)
     local src = source
+    local Player = exports['qb-core']:GetPlayer(src)
+    if not Player then return end
+
+    local inside = Player.PlayerData.metadata and Player.PlayerData.metadata['inside']
+    if not inside or not inside.apartment or inside.apartment.apartmentId ~= CurrentApartment then
+        return
+    end
+
+    local apartment = GetApartmentInfo(CurrentApartment)
+    if not apartment or apartment.citizenid ~= Player.PlayerData.citizenid then
+        return
+    end
+
     exports['qb-inventory']:OpenInventory(src, CurrentApartment)
 end)
 
